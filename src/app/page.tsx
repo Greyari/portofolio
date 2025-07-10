@@ -148,7 +148,7 @@ export default function Home() {
         {/* ... other main content elements ... */}
         <div className="w-full flex justify-center items-center my-4 md:mt-15 text-center font-bold relative px-4 md:px-0">
           <BlurText
-            text="Grey Ari Daniel Simatupang"
+            text="GREY ARI DANIEL SIMATUPANG"
             delay={150}
             animateBy="letters"
             direction="top"
@@ -159,7 +159,7 @@ export default function Home() {
 
         <div className="font-bold text-center opacity-0 animate-fadeIn mt-1 md:mt-3">
           <TrueFocus
-            sentence="daniel   grey   ari"
+            sentence="FULLSTACK   DESIGN-UI/IX   MECINE-LEARNING"
             manualMode={true}
             blurAmount={5}
             borderColor="cyan"
@@ -264,7 +264,7 @@ export default function Home() {
               <TiltedCard
                 imageSrc="/photos/tiltedcard.svg"
                 altText="Yuyuhiei"
-                captionText="Grey Ari Daniel Simatupang" 
+                captionText="GREY ARI DANIEL SIMATUPANG" 
                 containerHeight="600px"
                 containerWidth="500px"
                 imageHeight="600px"
@@ -276,7 +276,7 @@ export default function Home() {
                 displayOverlayContent={true}
                 overlayContent={
                   <p className="bg-transparent px-4 py-2 border-1 border-dashed rounded-lg opacity-50 font-bold m-5 absolute top-5 left-85">
-                    Lauvigne
+                    Grey
                   </p>
                 }
               />
