@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import Lanyard from "./Lanyard";
+import Lanyard from "./reactbits/Lanyard";
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -22,7 +22,7 @@ export default function Hero() {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen flex items-center px-6 md:px-16 lg:px-28"
+      className="relative min-h-screen flex items-center px-6 md:px-16 lg:px-28 pt-20"
       style={{ overflow: 'hidden' }}  
     >
       {/* Background dot grid */}
