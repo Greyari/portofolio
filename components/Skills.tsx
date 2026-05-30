@@ -57,7 +57,7 @@ function DecryptedText({
   );
 }
 
-// ─── CountUp (React Bits) ─────────────────────────────────────────────────────
+// ─── CountUp ─────────────────────────────────────────────────────────────────
 function CountUp({
   end,
   suffix = "",
@@ -100,104 +100,135 @@ function CountUp({
   );
 }
 
-// ─── AnimatedList (React Bits) ────────────────────────────────────────────────
-function AnimatedList({
-  children,
-  className = "",
-  delay = 80,
-}: {
-  children: React.ReactNode[];
-  className?: string;
-  delay?: number;
-}) {
-  const [visible, setVisible] = useState<boolean[]>(
-    new Array(children.length).fill(false)
-  );
-  const ref = useRef<HTMLDivElement>(null);
-  const triggered = useRef(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !triggered.current) {
-          triggered.current = true;
-          children.forEach((_, i) => {
-            setTimeout(() => {
-              setVisible((prev) => {
-                const next = [...prev];
-                next[i] = true;
-                return next;
-              });
-            }, i * delay);
-          });
-        }
-      },
-      { threshold: 0.2 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, [children.length, delay]);
-
-  return (
-    <div ref={ref} className={className}>
-      {children.map((child, i) => (
-        <div
-          key={i}
-          style={{
-            opacity: visible[i] ? 1 : 0,
-            transform: visible[i] ? "translateY(0)" : "translateY(16px)",
-            transition: "opacity 0.4s ease, transform 0.4s ease",
-          }}
-        >
-          {child}
-        </div>
-      ))}
-    </div>
-  );
-}
-
 // ─── Data ─────────────────────────────────────────────────────────────────────
 const skillGroups = [
   {
-    label: "Frontend",
-    color: "amber",
-    skills: [
-      { name: "Next.js", level: 90 },
-      { name: "React", level: 88 },
-      { name: "TypeScript", level: 80 },
-      { name: "Tailwind CSS", level: 92 },
-    ],
-  },
-  {
     label: "Backend",
-    color: "stone",
-    skills: [
-      { name: "Laravel", level: 90 },
-      { name: "PHP", level: 85 },
-      { name: "Node.js", level: 72 },
-      { name: "REST API", level: 88 },
-    ],
+    icon: "⚙️",
+    skills: ["Laravel", "PHP", "REST API", ".NET", "C#", "Python"],
   },
   {
-    label: "Database & Tools",
-    color: "amber",
-    skills: [
-      { name: "MySQL", level: 85 },
-      { name: "PostgreSQL", level: 70 },
-      { name: "Git / GitHub", level: 88 },
-      { name: "Docker", level: 60 },
-    ],
+    label: "Frontend & Mobile",
+    icon: "🖥️",
+    skills: ["Flutter", "Next.js", "Alpine.js", "Blade", "TypeScript", "HTML/CSS"],
+  },
+  {
+    label: "Database",
+    icon: "🗄️",
+    skills: ["MySQL", "SQL Server", "Firebase", "SQLite"],
+  },
+  {
+    label: "DevOps & Deploy",
+    icon: "🚀",
+    skills: ["Railway", "Cloudflare", "Cloudinary", "Vercel", "Linux", "Lubuntu"],
+  },
+  {
+    label: "IoT & AI",
+    icon: "🤖",
+    skills: ["Raspberry Pi", "YOLO", "ESP32", "Arduino"],
+  },
+  {
+    label: "Tools",
+    icon: "🛠️",
+    skills: ["Git", "Postman", "Figma", "Canva", "VS Code"],
   },
 ];
 
 const stats = [
   { value: 3, suffix: "+", label: "Tahun Pengalaman" },
-  { value: 15, suffix: "+", label: "Project Selesai" },
-  { value: 8, suffix: "+", label: "Klien Puas" },
-  { value: 2, suffix: "x", label: "Magang Industri" },
+  { value: 12, suffix: "+", label: "Project Selesai" },
+  { value: 12, suffix: "+", label: "Klien Puas" },
+  { value: 1, suffix: "x", label: "Magang Industri" },
 ];
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Skill Badge ──────────────────────────────────────────────────────────────
+function SkillBadge({ name, index }: { name: string; index: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    gsap.fromTo(
+      ref.current,
+      { opacity: 0, scale: 0.8, y: 10 },
+      {
+        opacity: 1,
+        scale: 1,
+        y: 0,
+        duration: 0.4,
+        delay: index * 0.05,
+        ease: "back.out(1.7)",
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top 90%",
+        },
+      }
+    );
+  }, [index]);
+
+  return (
+    <span
+      ref={ref}
+      className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-mono 
+        bg-stone-50 text-stone-700 border border-stone-200 
+        hover:bg-amber-50 hover:border-amber-300 hover:text-amber-700
+        transition-all duration-200 cursor-default opacity-0"
+    >
+      {name}
+    </span>
+  );
+}
+
+// ─── Skill Group Card ─────────────────────────────────────────────────────────
+function SkillGroupCard({
+  group,
+  index,
+}: {
+  group: (typeof skillGroups)[0];
+  index: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    gsap.fromTo(
+      ref.current,
+      { opacity: 0, y: 30 },
+      {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        delay: index * 0.1,
+        ease: "power3.out",
+        scrollTrigger: {
+          trigger: ref.current,
+          start: "top 88%",
+        },
+      }
+    );
+  }, [index]);
+
+  return (
+    <div
+      ref={ref}
+      className="bg-white rounded-2xl border border-stone-200 p-6 
+        hover:border-amber-200 hover:shadow-md transition-all duration-300 opacity-0"
+    >
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-lg">{group.icon}</span>
+        <span
+          className="text-xs font-mono tracking-widest uppercase text-stone-400"
+        >
+          {group.label}
+        </span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {group.skills.map((skill, i) => (
+          <SkillBadge key={skill} name={skill} index={i} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function Skills() {
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
@@ -228,11 +259,10 @@ export default function Skills() {
       ref={sectionRef}
       className="relative px-6 md:px-16 lg:px-28 py-28 bg-white overflow-hidden"
     >
-      {/* Subtle top border accent */}
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-stone-200 to-transparent" />
 
       {/* Heading */}
-      <div ref={headingRef} className="max-w-4xl mx-auto mb-20 opacity-0">
+      <div ref={headingRef} className="max-w-4xl mx-auto mb-16 opacity-0">
         <p className="font-mono text-xs tracking-widest uppercase text-amber-600 mb-3">
           — Kemampuan
         </p>
@@ -248,13 +278,14 @@ export default function Skills() {
         </h2>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-16">
-        {/* Stats CountUp */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div className="max-w-4xl mx-auto space-y-12">
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {stats.map((s) => (
             <div
               key={s.label}
-              className="text-center p-6 rounded-2xl bg-stone-50 border border-stone-100"
+              className="text-center p-6 rounded-2xl bg-stone-50 border border-stone-100 
+                hover:border-amber-200 transition-colors duration-200"
             >
               <p
                 className="text-3xl md:text-4xl font-bold text-stone-900 mb-1"
@@ -267,71 +298,13 @@ export default function Skills() {
           ))}
         </div>
 
-        {/* Skill bars per group */}
-        {skillGroups.map((group) => (
-          <div key={group.label}>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="h-px flex-1 bg-stone-100" />
-              <span className="font-mono text-xs tracking-widest uppercase text-stone-400">
-                {group.label}
-              </span>
-              <div className="h-px flex-1 bg-stone-100" />
-            </div>
-
-            <AnimatedList
-              className="grid grid-cols-1 md:grid-cols-2 gap-4"
-              delay={100}
-            >
-              {group.skills.map((skill) => (
-                <SkillBar key={skill.name} name={skill.name} level={skill.level} />
-              ))}
-            </AnimatedList>
-          </div>
-        ))}
+        {/* Skill Groups Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {skillGroups.map((group, i) => (
+            <SkillGroupCard key={group.label} group={group} index={i} />
+          ))}
+        </div>
       </div>
     </section>
-  );
-}
-
-function SkillBar({ name, level }: { name: string; level: number }) {
-  const barRef = useRef<HTMLDivElement>(null);
-  const filled = useRef<HTMLDivElement>(null);
-  const triggered = useRef(false);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !triggered.current) {
-          triggered.current = true;
-          if (filled.current) {
-            filled.current.style.width = `${level}%`;
-          }
-        }
-      },
-      { threshold: 0.5 }
-    );
-    if (barRef.current) observer.observe(barRef.current);
-    return () => observer.disconnect();
-  }, [level]);
-
-  return (
-    <div ref={barRef} className="group">
-      <div className="flex justify-between items-center mb-2">
-        <span
-          className="text-sm font-medium text-stone-700"
-          style={{ fontFamily: "'Instrument Sans', sans-serif" }}
-        >
-          {name}
-        </span>
-        <span className="font-mono text-xs text-stone-400">{level}%</span>
-      </div>
-      <div className="h-1.5 bg-stone-100 rounded-full overflow-hidden">
-        <div
-          ref={filled}
-          className="h-full bg-amber-400 rounded-full transition-all duration-1000 ease-out"
-          style={{ width: "0%" }}
-        />
-      </div>
-    </div>
   );
 }

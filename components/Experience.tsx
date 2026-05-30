@@ -6,7 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-type Category = "kuliah" | "magang" | "freelance";
+type Category = "magang" | "freelance" | "akademik";
 
 interface ExperienceItem {
   title: string;
@@ -19,61 +19,126 @@ interface ExperienceItem {
 }
 
 const data: Record<Category, ExperienceItem[]> = {
-  kuliah: [
-    {
-      title: "Mahasiswa Informatika",
-      org: "Politeknik Negeri Batam",
-      period: "2021 — Sekarang",
-      location: "Batam, Indonesia",
-      description:
-        "Mendalami rekayasa perangkat lunak, basis data, dan pengembangan web. Aktif terlibat dalam proyek akademik berbasis teknologi.",
-      tags: ["Web Dev", "Database", "Software Engineering"],
-      projects: [
-        {
-          name: "Parking Smart Batam",
-          desc: "Sistem manajemen parkir cerdas berbasis web dengan fitur monitoring real-time dan laporan otomatis.",
-        },
-        {
-          name: "HR Pro",
-          desc: "Aplikasi HR management untuk mengelola data karyawan, absensi, dan penggajian secara terintegrasi.",
-        },
-      ],
-    },
-  ],
   magang: [
     {
-      title: "Web Developer Intern",
-      org: "PT. Ariska Group",
-      period: "2023",
+      title: "Software Developer Intern",
+      org: "PT Kreatif System Indonesia",
+      period: "Aug 2025 — Mar 2026",
       location: "Batam, Indonesia",
       description:
-        "Mengembangkan fitur-fitur baru untuk aplikasi internal perusahaan dan melakukan pemeliharaan sistem yang sudah berjalan.",
-      tags: ["Laravel", "PHP", "MySQL", "Bootstrap"],
+        "Menjalani magang sebagai backend developer dengan fokus pada pengembangan sistem HR, integrasi AI, dan deployment ke server internal perusahaan berbasis Linux/Lubuntu.",
+      tags: ["Laravel", "Next.js", "Groq AI", "Linux", "Vercel", "MySQL"],
       projects: [
         {
-          name: "POS Ariska",
-          desc: "Point-of-Sale system untuk kasir retail — fitur manajemen stok, transaksi, dan laporan penjualan harian.",
+          name: "HR Information System",
+          desc: "Membangun full backend HRIS cross-platform (Mobile & Web) menggunakan Laravel. Menangani manajemen karyawan, absensi, dan penggajian. Bertanggung jawab atas deployment end-to-end ke server internal Linux/Lubuntu perusahaan.",
+        },
+        {
+          name: "Corporate Website & AI Integration",
+          desc: "Membangun backend dan sebagian UI menggunakan Next.js. Mengintegrasikan Groq AI-powered chatbot untuk otomatisasi customer support. Deployed ke Vercel.",
+        },
+        {
+          name: "Customer Loyalty System",
+          desc: "Merancang backend loyalty engine menggunakan Laravel dengan sistem tier-based ranking otomatis yang memproses riwayat transaksi untuk meningkatkan retensi dan frekuensi pembelian pengguna.",
         },
       ],
     },
   ],
   freelance: [
     {
-      title: "Freelance Full-Stack Developer",
-      org: "Independent",
-      period: "2022 — Sekarang",
+      title: "Freelance Full Stack Developer",
+      org: "Various Clients",
+      period: "2024 — Sekarang",
       location: "Remote",
       description:
-        "Membangun solusi digital untuk klien dari berbagai industri — mulai dari landing page, sistem manajemen, hingga REST API.",
-      tags: ["Next.js", "React", "Laravel", "REST API", "Tailwind"],
+        "Mengerjakan berbagai project freelance mulai dari sistem web berbasis IoT/AI, aplikasi manajemen, hingga desain UI/UX untuk klien dari berbagai industri.",
+      tags: ["Laravel", "YOLO", "Raspberry Pi", ".NET", "SQL Server", "Railway", "Cloudinary", "Figma"],
       projects: [
         {
-          name: "Company Profile & Landing Pages",
-          desc: "Desain dan development website presentasi bisnis yang responsif dan SEO-friendly.",
+          name: "Parking Management System (IoT & AI)",
+          desc: "Mengembangkan dan meningkatkan sistem parkir cerdas. Menambahkan notifikasi email via Brevo, integrasi deteksi polygon langsung dari kamera di panel admin. Dibangun dengan Laravel, YOLO, Raspberry Pi dengan tunneling, deploy di Railway. Storage via Cloudinary.",
         },
         {
-          name: "Custom Management Systems",
-          desc: "Aplikasi web custom untuk kebutuhan spesifik klien, termasuk inventori dan manajemen konten.",
+          name: "POS & Inventory System",
+          desc: "Membangun sistem POS dan inventory full-stack menggunakan Laravel dan MySQL. Fitur meliputi simulasi rakit PC dengan logika kompatibilitas komponen otomatis dan integrasi Midtrans payment gateway. Deploy di Railway, storage via Cloudinary.",
+        },
+        {
+          name: "Abnormality Management Web App",
+          desc: "Membangun sistem pelaporan dan penyelesaian abnormalitas berbasis web untuk lini produksi manufaktur menggunakan .NET dan SQL Server. Fitur multi-role reporting flow (lapor → verifikasi → selesaikan oleh PIC) dan dashboard real-time.",
+        },
+        {
+          name: "Room & Equipment Borrowing System",
+          desc: "Mengembangkan sistem manajemen peminjaman ruangan dan barang berbasis web untuk ormawa kampus menggunakan Laravel dan MySQL.",
+        },
+        {
+          name: "Internship & Attendance Management UI",
+          desc: "Mendesain wireframe dan UI/UX untuk sistem manajemen magang dan absensi di lingkungan rumah sakit menggunakan Figma.",
+        },
+      ],
+    },
+  ],
+  akademik: [
+    {
+      title: "Full Stack Developer",
+      org: "Parking Smart Batam",
+      period: "Feb 2025 — Jul 2025",
+      location: "Politeknik Negeri Batam",
+      description:
+        "Merancang dan membangun sistem pemantauan parkir dan lalu lintas real-time berbasis AI dan IoT menggunakan Laravel dengan model YOLO untuk deteksi ketersediaan slot parkir.",
+      tags: ["Laravel", "YOLO", "IoT", "Raspberry Pi", "Figma", "MySQL"],
+      projects: [
+        {
+          name: "Real-time Parking Detection",
+          desc: "Mengintegrasikan model YOLO via API untuk mendeteksi ketersediaan slot parkir dan kondisi lalu lintas secara real-time melalui perangkat IoT.",
+        },
+        {
+          name: "Full-stack Web Platform",
+          desc: "Mengembangkan end-to-end fitur: landing page, dashboard, autentikasi dengan verifikasi email, statistik, dan modul monitoring AI/IoT real-time.",
+        },
+      ],
+    },
+    {
+      title: "Backend Developer",
+      org: "Smart Inventory System with RFID",
+      period: "Aug 2024 — Dec 2024",
+      location: "Politeknik Negeri Batam",
+      description:
+        "Memimpin pengembangan backend sistem inventaris berbasis web dengan pelacakan item menggunakan RFID. Merancang arsitektur database dan memastikan konsistensi desain UI/UX.",
+      tags: ["Laravel", "RFID", "MySQL", "Figma"],
+      projects: [
+        {
+          name: "RFID Tracking Integration",
+          desc: "Mengintegrasikan fitur scanning RFID untuk pelacakan item ke dalam sistem web, mencakup autentikasi, alur peminjaman, dan manajemen data item.",
+        },
+      ],
+    },
+    {
+      title: "Full Stack Developer — Team Lead",
+      org: "Web Based Smartphone Sales System",
+      period: "Jan 2024 — Jun 2024",
+      location: "Politeknik Negeri Batam",
+      description:
+        "Memimpin tim dalam pengembangan platform penjualan smartphone berbasis web full-stack. Menangani seluruh sisi admin mulai dari manajemen data, kontrol akses, hingga fitur pembayaran.",
+      tags: ["Laravel", "MySQL", "Bootstrap", "Figma"],
+      projects: [
+        {
+          name: "Admin Panel & Payment",
+          desc: "Mengembangkan full frontend dan backend untuk seluruh halaman admin termasuk manajemen data, kontrol akses, UI/UX, fitur pembayaran, dan shopping cart dari awal.",
+        },
+      ],
+    },
+    {
+      title: "Full Stack Developer",
+      org: "Computer Device Sales Service Application",
+      period: "Aug 2023 — Dec 2023",
+      location: "Politeknik Negeri Batam",
+      description:
+        "Merancang arsitektur sistem secara keseluruhan dan memetakan proses bisnis melalui use case dan flowchart sebagai fondasi alur pengembangan tim.",
+      tags: ["PHP", "MySQL", "Bootstrap"],
+      projects: [
+        {
+          name: "Core Features Development",
+          desc: "Mengembangkan frontend dan backend untuk fitur utama: autentikasi, detail produk, dan shopping cart.",
         },
       ],
     },
@@ -81,13 +146,13 @@ const data: Record<Category, ExperienceItem[]> = {
 };
 
 const tabs: { key: Category; label: string; emoji: string }[] = [
-  { key: "kuliah", label: "Kuliah", emoji: "🎓" },
   { key: "magang", label: "Magang", emoji: "💼" },
   { key: "freelance", label: "Freelance", emoji: "🚀" },
+  { key: "akademik", label: "Akademik", emoji: "🎓" },
 ];
 
 export default function Experience() {
-  const [active, setActive] = useState<Category>("kuliah");
+  const [active, setActive] = useState<Category>("magang");
   const sectionRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -109,7 +174,6 @@ export default function Experience() {
         }
       );
     }, sectionRef);
-
     return () => ctx.revert();
   }, []);
 
@@ -129,13 +193,10 @@ export default function Experience() {
       ref={sectionRef}
       className="relative px-6 md:px-16 lg:px-28 py-28 bg-stone-50 overflow-hidden"
     >
-      {/* Background accent */}
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-amber-400 to-transparent opacity-50" />
 
       <div ref={headingRef} className="max-w-4xl mx-auto mb-16 opacity-0">
-        <p
-          className="font-mono text-xs tracking-widest uppercase text-amber-600 mb-3"
-        >
+        <p className="font-mono text-xs tracking-widest uppercase text-amber-600 mb-3">
           — Perjalanan
         </p>
         <h2
@@ -169,7 +230,7 @@ export default function Experience() {
         </div>
 
         {/* Content */}
-        <div ref={contentRef}>
+        <div ref={contentRef} className="space-y-6">
           {items.map((item, idx) => (
             <ExperienceCard key={idx} item={item} index={idx} />
           ))}
@@ -186,14 +247,13 @@ function ExperienceCard({
   item: ExperienceItem;
   index: number;
 }) {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(index === 0);
 
   return (
     <div
       className="relative bg-white rounded-2xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
       style={{ animationDelay: `${index * 0.1}s` }}
     >
-      {/* Left accent bar */}
       <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-amber-400 to-amber-200 rounded-l-2xl" />
 
       <div className="p-6 md:p-8 pl-8 md:pl-10">
@@ -214,9 +274,7 @@ function ExperienceCard({
             </p>
           </div>
           <div className="text-right shrink-0">
-            <span
-              className="text-xs font-mono text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full whitespace-nowrap"
-            >
+            <span className="text-xs font-mono text-stone-500 bg-stone-100 px-2.5 py-1 rounded-full whitespace-nowrap">
               {item.period}
             </span>
             {item.location && (
@@ -256,13 +314,10 @@ function ExperienceCard({
               className="flex items-center gap-1.5 text-xs font-medium text-stone-500 hover:text-stone-900 transition-colors mb-3"
               style={{ fontFamily: "'Instrument Sans', sans-serif" }}
             >
-              <span
-                className={`transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}
-              >
+              <span className={`transition-transform duration-200 ${expanded ? "rotate-90" : ""}`}>
                 ▶
               </span>
-              {expanded ? "Sembunyikan" : "Lihat"} Proyek (
-              {item.projects.length})
+              {expanded ? "Sembunyikan" : "Lihat"} Project ({item.projects.length})
             </button>
 
             {expanded && (

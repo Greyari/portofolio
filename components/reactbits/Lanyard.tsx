@@ -15,9 +15,8 @@ import {
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 import * as THREE from 'three';
 
-const cardGLB =
-  'https://assets.vercel.com/image/upload/contentful/image/e5382hct74si/5huRVDzcoDwnbgrKUo1Lzs/53b6dd7d6b4ffcdbd338fa60265949e1/tag.glb';
-const lanyard = '/models/lanyard/tes.jpeg';
+const cardGLB = '/models/lanyard/card.glb';
+const lanyard = '/models/lanyard/G.png';
 
 extend({ MeshLineGeometry, MeshLineMaterial });
 
@@ -97,7 +96,17 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   };
 
   const { nodes, materials } = useGLTF(cardGLB) as any;
-  const texture = useTexture(lanyard);
+  const texture = useTexture(lanyard); // Ini untuk tekstur tali
+
+  // ====================================================================
+  // 1. TAMBAHKAN LINE INI: Muat gambar dari Canva tadi sebagai tekstur
+  // ====================================================================
+  const cardTexture = useTexture('/models/lanyard/fotoCard.png'); 
+  
+  // WAJIB: Supaya gambar tidak terbalik secara vertikal saat ditempel ke objek 3D
+  cardTexture.flipY = false; 
+  // ====================================================================
+
   const [curve] = useState(
     () =>
       new THREE.CatmullRomCurve3([
@@ -150,7 +159,6 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
         );
       });
 
-      // Rapier translation() selalu world space, sinkron dengan band mesh di luar group
       curve.points[0].copy(j3.current.translation());
       curve.points[1].copy(j2.current.lerped);
       curve.points[2].copy(j1.current.lerped);
@@ -168,11 +176,6 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
 
   return (
     <>
-      {/*
-        Physics objects di dalam group.
-        Ubah position[0] untuk geser kanan/kiri (positif = kanan).
-        Ubah position[1] untuk naik/turun (positif = atas).
-      */}
       <group position={[4, 4, 0]}>
         <RigidBody ref={fixed} {...segmentProps} type={'fixed' as RigidBodyProps['type']} />
         <RigidBody position={[0.5, 0, 0]} ref={j1} {...segmentProps} type={'dynamic' as RigidBodyProps['type']}>
@@ -207,12 +210,16 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
           >
             <mesh geometry={nodes.card.geometry}>
               <meshPhysicalMaterial
-                map={materials.base.map}
+                // ====================================================================
+                // 2. UBAH DI SINI: Ganti dari materials.base.map menjadi cardTexture
+                // ====================================================================
+                map={cardTexture} 
+                // ====================================================================
                 map-anisotropy={16}
                 clearcoat={isMobile ? 0 : 1}
                 clearcoatRoughness={0.15}
-                roughness={0.9}
-                metalness={0.8}
+                roughness={0.6} // Dikurangi sedikit agar terlihat permukaan plastiknya lebih smooth
+                metalness={0.1} // Dikurangi dari 0.8 karena ID card biasanya bahan non-metal (kertas/plastik)
               />
             </mesh>
             <mesh geometry={nodes.clip.geometry} material={materials.metal} material-roughness={0.3} />
@@ -221,11 +228,6 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
         </RigidBody>
       </group>
 
-      {/*
-        Band mesh di LUAR group supaya render di world space.
-        curve.points dari Rapier sudah world space, jadi tali tampil tepat
-        menghubungkan anchor ke kartu tanpa offset tambahan.
-      */}
       <mesh ref={band}>
         <meshLineGeometry />
         <meshLineMaterial

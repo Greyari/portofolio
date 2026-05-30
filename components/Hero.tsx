@@ -23,7 +23,7 @@ export default function Hero() {
     <section
       ref={containerRef}
       className="relative min-h-screen flex items-center px-6 md:px-16 lg:px-28 pt-20"
-      style={{ overflow: 'hidden' }}  
+      style={{ overflow: "hidden" }}
     >
       {/* Background dot grid */}
       <div
@@ -35,29 +35,24 @@ export default function Hero() {
         }}
       />
 
-      {/* Lanyard wrapper — overflow VISIBLE agar kartu bisa keluar dari kolom kanan */}
-      <div
-        className="absolute inset-0"
-        style={{ zIndex: 2, pointerEvents: 'none' }}
-      >
-        <div style={{ width: '100%', height: '100%', pointerEvents: 'auto' }}>
+      {/* Lanyard */}
+      <div className="absolute inset-0" style={{ zIndex: 2, pointerEvents: "none" }}>
+        <div style={{ width: "100%", height: "100%", pointerEvents: "auto" }}>
           <Lanyard position={[0, 0, 20]} gravity={[0, -40, 0]} transparent={true} />
         </div>
       </div>
 
-
-      {/* ✅ Grid hanya untuk teks, z-index di atas canvas */}
+      {/* Grid */}
       <div
         className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-10 lg:mt-0"
-        style={{ position: 'relative', zIndex: 1, pointerEvents: 'none' }}  
+        style={{ position: "relative", zIndex: 1, pointerEvents: "none" }}
       >
-        {/* KOLOM KIRI: Teks */}
+        {/* Kolom kiri */}
         <div
           ref={leftContentRef}
           className="max-w-xl order-2 lg:order-1"
-          style={{ pointerEvents: 'auto' }}
+          style={{ pointerEvents: "auto" }}
         >
-          
           <span className="inline-block font-mono text-xs tracking-widest uppercase text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full mb-6 opacity-0">
             👋 Available for work
           </span>
@@ -77,12 +72,12 @@ export default function Hero() {
             className="text-lg md:text-xl text-stone-600 leading-relaxed mb-6 opacity-0"
             style={{ fontFamily: "'Instrument Sans', 'DM Sans', sans-serif" }}
           >
-            Full-stack Developer — saya suka membangun produk yang bermanfaat,
-            dari backend yang solid sampai UI yang terasa <em>smooth</em>.
+            Full-stack Developer — backend specialist yang suka membangun produk
+            bermanfaat, dari server sampai UI yang terasa <em>smooth</em>.
           </p>
 
           <div className="flex flex-wrap gap-2 mb-10 opacity-0">
-            {["Laravel", "Next.js", "React", "TypeScript", "MySQL"].map((t) => (
+            {["Laravel", "Next.js", "Flutter", ".NET", "MySQL", "YOLO", "Raspberry Pi"].map((t) => (
               <span
                 key={t}
                 className="text-xs font-medium px-3 py-1.5 rounded-full border border-stone-200 bg-white text-stone-600 shadow-sm"
@@ -101,10 +96,17 @@ export default function Hero() {
             >
               Lihat Pengalaman
             </a>
+            <a
+              href="#projects"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-stone-200 bg-white text-stone-700 text-sm font-medium hover:border-amber-400 hover:text-amber-600 transition-colors duration-300 shadow-sm"
+              style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+            >
+              Lihat Projects
+            </a>
           </div>
         </div>
 
-        {/* ✅ Kolom kanan: kosong, space visual saja */}
+        {/* Kolom kanan: kosong, space untuk lanyard */}
         <div className="hidden lg:block order-1 lg:order-2" />
       </div>
     </section>
