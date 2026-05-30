@@ -2,7 +2,11 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import Lanyard from "./reactbits/Lanyard";
+import dynamic from "next/dynamic";
+
+const Lanyard = dynamic(() => import("./reactbits/Lanyard"), {
+  ssr: false,
+});
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
