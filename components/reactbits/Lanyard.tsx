@@ -14,6 +14,7 @@ import {
 } from '@react-three/rapier';
 import { MeshLineGeometry, MeshLineMaterial } from 'meshline';
 import * as THREE from 'three';
+import type {} from '@react-three/fiber';
 
 const cardGLB = '/models/lanyard/card.glb';
 const lanyard = '/models/lanyard/G.png';
