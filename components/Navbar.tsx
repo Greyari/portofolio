@@ -54,7 +54,7 @@ export default function Navbar() {
           onComplete: () => {
             // Matikan blur setelah animasi selesai
             pill.style.backdropFilter = "none";
-            pill.style.webkitBackdropFilter = "none";
+            (pill.style as any).webkitBackdropFilter = "none";
           },
         });
       }
