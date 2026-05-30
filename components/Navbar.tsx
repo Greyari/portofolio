@@ -35,7 +35,7 @@ export default function Navbar() {
         isScrolled.current = true;
         // Aktifkan blur + glass saat scroll
         pill.style.backdropFilter = "blur(14px)";
-        pill.style.webkitBackdropFilter = "blur(14px)";
+        (pill.style as any).webkitBackdropFilter = "blur(14px)";
         gsap.to(pill, {
           backgroundColor: "rgba(255,255,255,0.82)",
           boxShadow: "0 1px 24px 0 rgba(0,0,0,0.07)",
