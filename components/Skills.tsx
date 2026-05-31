@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import GitHubGraph from "@/components/GitHubGraph";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -304,6 +305,10 @@ export default function Skills() {
             <SkillGroupCard key={group.label} group={group} index={i} />
           ))}
         </div>
+        
+        {/* ini git hub card */}
+        <GitHubGraph />
+
       </div>
     </section>
   );
