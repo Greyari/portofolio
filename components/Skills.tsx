@@ -67,7 +67,7 @@ function CountUp({
   suffix?: string;
   duration?: number;
 }) {
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState<number | null>(null); // ← null dulu
   const ref = useRef<HTMLSpanElement>(null);
   const started = useRef(false);
 
@@ -76,6 +76,7 @@ function CountUp({
       ([entry]) => {
         if (entry.isIntersecting && !started.current) {
           started.current = true;
+          setCount(0); // ← baru mulai dari 0 saat masuk viewport
           const startTime = performance.now();
           const step = (now: number) => {
             const progress = Math.min((now - startTime) / duration, 1);
@@ -94,8 +95,7 @@ function CountUp({
 
   return (
     <span ref={ref}>
-      {count}
-      {suffix}
+      {count === null ? "" : `${count}${suffix}`}
     </span>
   );
 }
