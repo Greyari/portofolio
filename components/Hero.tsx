@@ -1,18 +1,21 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import dynamic from "next/dynamic";
 
 const Lanyard = dynamic(() => import("./reactbits/Lanyard"), {
   ssr: false,
+  loading: () => null,
 });
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const leftContentRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const ctx = gsap.context(() => {
       gsap.fromTo(
         leftContentRef.current?.children ? Array.from(leftContentRef.current.children) : [],
@@ -29,7 +32,6 @@ export default function Hero() {
       className="relative min-h-screen flex items-center px-6 md:px-16 lg:px-28 pt-20"
       style={{ overflow: "hidden" }}
     >
-      {/* Background dot grid */}
       <div
         className="absolute inset-0 -z-10 pointer-events-none"
         style={{
@@ -42,16 +44,16 @@ export default function Hero() {
       {/* Lanyard */}
       <div className="absolute inset-0" style={{ zIndex: 2, pointerEvents: "none" }}>
         <div style={{ width: "100%", height: "100%", pointerEvents: "auto" }}>
-          <Lanyard position={[0, 0, 20]} gravity={[0, -40, 0]} transparent={true} />
+          {mounted && (
+            <Lanyard position={[0, 0, 20]} gravity={[0, -40, 0]} transparent={true} />
+          )}
         </div>
       </div>
 
-      {/* Grid */}
       <div
         className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-10 lg:mt-0"
         style={{ position: "relative", zIndex: 1, pointerEvents: "none" }}
       >
-        {/* Kolom kiri */}
         <div
           ref={leftContentRef}
           className="max-w-xl order-2 lg:order-1"
@@ -100,6 +102,7 @@ export default function Hero() {
             >
               Lihat Pengalaman
             </a>
+
             <a
               href="#projects"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-stone-200 bg-white text-stone-700 text-sm font-medium hover:border-amber-400 hover:text-amber-600 transition-colors duration-300 shadow-sm"
@@ -110,7 +113,6 @@ export default function Hero() {
           </div>
         </div>
 
-        {/* Kolom kanan: kosong, space untuk lanyard */}
         <div className="hidden lg:block order-1 lg:order-2" />
       </div>
     </section>
