@@ -96,14 +96,6 @@ export default function Hero() {
 
           <div className="flex flex-wrap gap-4 opacity-0">
             <a
-              href="#experience"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-stone-900 text-white text-sm font-medium hover:bg-amber-500 transition-colors duration-300 shadow-md"
-              style={{ fontFamily: "'Instrument Sans', sans-serif" }}
-            >
-              Lihat Pengalaman
-            </a>
-
-            <a
               href="#projects"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-stone-200 bg-white text-stone-700 text-sm font-medium hover:border-amber-400 hover:text-amber-600 transition-colors duration-300 shadow-sm"
               style={{ fontFamily: "'Instrument Sans', sans-serif" }}
