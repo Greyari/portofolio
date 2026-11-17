@@ -1,7 +1,7 @@
-/* eslint-disable react/no-unknown-property */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
-import { useEffect, useRef, useState } from 'react';
-import { Canvas, extend, useFrame } from '@react-three/fiber';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas, extend, useFrame, ThreeEvent } from '@react-three/fiber';
 import { useGLTF, useTexture, Environment, Lightformer } from '@react-three/drei';
 import {
   BallCollider,
@@ -29,30 +29,33 @@ interface LanyardProps {
 }
 
 export default function Lanyard({
-  position = [0, 0, 30],
+  position = [0, 0, 20],
   gravity = [0, -40, 0],
   fov = 20,
   transparent = true,
 }: LanyardProps) {
   const [isMobile, setIsMobile] = useState<boolean>(
-    () => typeof window !== 'undefined' && window.innerWidth < 768
+    () => typeof window !== 'undefined' && window.innerWidth < 1024
   );
 
   useEffect(() => {
-    const handleResize = (): void => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handleResize);
+    const handleResize = (): void => setIsMobile(window.innerWidth < 1024);
+    window.addEventListener('resize', handleResize, { passive: true });
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   return (
-    <div className="relative z-0 w-full h-screen flex justify-center items-center transform scale-100 origin-center">
+    <div
+      className="relative z-0 w-full h-screen flex justify-center items-center transform scale-100 origin-center"
+      style={{ touchAction: 'pan-y' }}
+    >
       <Canvas
         camera={{ position, fov }}
         dpr={[1, isMobile ? 1.5 : 2]}
-        gl={{ alpha: transparent }}
-        onCreated={({ gl }) =>
-          gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1)
-        }
+        gl={{ alpha: transparent, powerPreference: 'high-performance' }}
+        onCreated={({ gl }) => {
+          gl.setClearColor(new THREE.Color(0x000000), transparent ? 0 : 1);
+        }}
       >
         <ambientLight intensity={Math.PI} />
         <Physics gravity={gravity} timeStep={isMobile ? 1 / 30 : 1 / 60}>
@@ -83,10 +86,10 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   const j3 = useRef<any>(null);
   const card = useRef<any>(null);
 
-  const vec = new THREE.Vector3();
-  const ang = new THREE.Vector3();
-  const rot = new THREE.Vector3();
-  const dir = new THREE.Vector3();
+  const vec = useMemo(() => new THREE.Vector3(), []);
+  const ang = useMemo(() => new THREE.Vector3(), []);
+  const rot = useMemo(() => new THREE.Vector3(), []);
+  const dir = useMemo(() => new THREE.Vector3(), []);
 
   const segmentProps: any = {
     type: 'dynamic' as RigidBodyProps['type'],
@@ -97,26 +100,28 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
   };
 
   const { nodes, materials } = useGLTF(cardGLB) as any;
-  const texture = useTexture(lanyard); // Ini untuk tekstur tali
+  const texture = useTexture(lanyard, (tex) => {
+    if (!Array.isArray(tex)) {
+      tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    }
+  });
+  const cardTexture = useTexture('/models/lanyard/fotoCard.png', (tex) => {
+    if (!Array.isArray(tex)) {
+      tex.flipY = false;
+    }
+  });
 
-  // ====================================================================
-  // 1. TAMBAHKAN LINE INI: Muat gambar dari Canva tadi sebagai tekstur
-  // ====================================================================
-  const cardTexture = useTexture('/models/lanyard/fotoCard.png'); 
-  
-  // WAJIB: Supaya gambar tidak terbalik secara vertikal saat ditempel ke objek 3D
-  cardTexture.flipY = false; 
-  // ====================================================================
+  const curve = useMemo(() => {
+    const c = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(),
+      new THREE.Vector3(),
+      new THREE.Vector3(),
+      new THREE.Vector3(),
+    ]);
+    c.curveType = 'chordal';
+    return c;
+  }, []);
 
-  const [curve] = useState(
-    () =>
-      new THREE.CatmullRomCurve3([
-        new THREE.Vector3(),
-        new THREE.Vector3(),
-        new THREE.Vector3(),
-        new THREE.Vector3(),
-      ])
-  );
   const [dragged, drag] = useState<false | THREE.Vector3>(false);
   const [hovered, hover] = useState(false);
 
@@ -172,12 +177,14 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
     }
   });
 
-  curve.curveType = 'chordal';
-  texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+  // In full-viewport canvas (camera z=20, fov=20), visible X is [-5.5, +5.5].
+  // X=2.3 places the lanyard squarely in the center of the right column!
+  const anchorX = isMobile ? 0 : 2.3;
+  const anchorY = 4.0;
 
   return (
     <>
-      <group position={[4, 4, 0]}>
+      <group position={[anchorX, anchorY, 0]}>
         <RigidBody ref={fixed} {...segmentProps} type={'fixed' as RigidBodyProps['type']} />
         <RigidBody position={[0.5, 0, 0]} ref={j1} {...segmentProps} type={'dynamic' as RigidBodyProps['type']}>
           <BallCollider args={[0.1]} />
@@ -200,27 +207,23 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false }: BandProps) {
             position={[0, -1.2, -0.05]}
             onPointerOver={() => hover(true)}
             onPointerOut={() => hover(false)}
-            onPointerUp={(e: any) => {
-              e.target.releasePointerCapture(e.pointerId);
+            onPointerUp={(e: ThreeEvent<PointerEvent>) => {
+              (e.target as HTMLElement).releasePointerCapture(e.pointerId);
               drag(false);
             }}
-            onPointerDown={(e: any) => {
-              e.target.setPointerCapture(e.pointerId);
+            onPointerDown={(e: ThreeEvent<PointerEvent>) => {
+              (e.target as HTMLElement).setPointerCapture(e.pointerId);
               drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())));
             }}
           >
             <mesh geometry={nodes.card.geometry}>
               <meshPhysicalMaterial
-                // ====================================================================
-                // 2. UBAH DI SINI: Ganti dari materials.base.map menjadi cardTexture
-                // ====================================================================
-                map={cardTexture} 
-                // ====================================================================
+                map={cardTexture}
                 map-anisotropy={16}
                 clearcoat={isMobile ? 0 : 1}
                 clearcoatRoughness={0.15}
-                roughness={0.6} // Dikurangi sedikit agar terlihat permukaan plastiknya lebih smooth
-                metalness={0.1} // Dikurangi dari 0.8 karena ID card biasanya bahan non-metal (kertas/plastik)
+                roughness={0.55}
+                metalness={0.1}
               />
             </mesh>
             <mesh geometry={nodes.clip.geometry} material={materials.metal} material-roughness={0.3} />

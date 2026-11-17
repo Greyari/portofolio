@@ -2,110 +2,190 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import dynamic from "next/dynamic";
-
-const Lanyard = dynamic(() => import("./reactbits/Lanyard"), {
-  ssr: false,
-  loading: () => null,
-});
+import OrbitClock from "@/components/OrbitClock";
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const leftContentRef = useRef<HTMLDivElement>(null);
-  const [mounted, setMounted] = useState(false);
+  const clockWrapRef = useRef<HTMLDivElement>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        leftContentRef.current?.children ? Array.from(leftContentRef.current.children) : [],
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 0.8, stagger: 0.15, ease: "power3.out" }
-      );
+      if (leftContentRef.current) {
+        gsap.fromTo(
+          Array.from(leftContentRef.current.children),
+          { opacity: 0, y: 24 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.12,
+            ease: "power3.out",
+            delay: 0.25,
+          }
+        );
+      }
+      if (clockWrapRef.current) {
+        gsap.fromTo(
+          clockWrapRef.current,
+          { opacity: 0, scale: 0.9, y: 30 },
+          {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.95,
+            ease: "power3.out",
+            delay: 0.45,
+          }
+        );
+      }
     }, containerRef);
+
     return () => ctx.revert();
   }, []);
 
+  const copyEmail = () => {
+    navigator.clipboard.writeText("tupang1017@gmail.com");
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2200);
+  };
+
   return (
     <section
+      id="overview"
       ref={containerRef}
-      className="relative min-h-screen flex items-center px-6 md:px-16 lg:px-28 pt-20"
-      style={{ overflow: "hidden" }}
+      className="relative min-h-screen flex items-center px-6 md:px-16 lg:px-24 pt-24 pb-16 overflow-hidden bg-stone-50/40"
     >
+      {/* Background Architectural Grid Pattern */}
       <div
-        className="absolute inset-0 -z-10 pointer-events-none"
+        className="absolute inset-0 -z-20 pointer-events-none opacity-30 bg-grid-subtle"
         style={{
-          backgroundImage: "radial-gradient(circle, #d1d5db 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
-          opacity: 0.35,
+          maskImage:
+            "radial-gradient(ellipse at center, black 45%, transparent 82%)",
+          WebkitMaskImage:
+            "radial-gradient(ellipse at center, black 45%, transparent 82%)",
         }}
       />
 
-      {/* Lanyard */}
-      <div className="absolute inset-0" style={{ zIndex: 2, pointerEvents: "none" }}>
-        <div style={{ width: "100%", height: "100%", pointerEvents: "auto" }}>
-          {mounted && (
-            <Lanyard position={[0, 0, 20]} gravity={[0, -40, 0]} transparent={true} />
-          )}
-        </div>
-      </div>
+      {/* Subtle Warm Atmospheric Glows */}
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-amber-100/40 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute bottom-10 left-10 w-72 h-72 bg-stone-200/50 rounded-full blur-3xl pointer-events-none -z-10" />
 
-      <div
-        className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mt-10 lg:mt-0"
-        style={{ position: "relative", zIndex: 1, pointerEvents: "none" }}
-      >
+      {/* Main Content Grid */}
+      <div className="max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-14 items-center">
+        {/* Left Column: Editorial Information */}
         <div
           ref={leftContentRef}
-          className="max-w-xl order-2 lg:order-1"
-          style={{ pointerEvents: "auto" }}
+          className="lg:col-span-7 max-w-2xl order-2 lg:order-1"
         >
-          <span className="inline-block font-mono text-xs tracking-widest uppercase text-amber-600 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full mb-6 opacity-0">
-            👋 Available for work
-          </span>
+          {/* Status & Location Pill (Tanpa titik hijau) */}
+          <div className="flex flex-wrap items-center gap-2 mb-6 opacity-0">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-amber-200/90 bg-amber-50/90 text-stone-800 text-xs font-mono shadow-xs">
+              <span className="font-semibold text-amber-900">
+                Available for Work
+              </span>
+              <span className="text-amber-500 font-serif">✦</span>
+              <span className="text-stone-600">Batam, ID</span>
+            </div>
+          </div>
 
-          <h1
-            className="font-display text-5xl md:text-7xl font-bold text-stone-900 leading-none tracking-tight mb-4 opacity-0"
-            style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}
-          >
+          {/* Large Boutique Heading */}
+          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[76px] font-bold text-stone-900 leading-[0.96] tracking-tight mb-5 opacity-0">
             Grey Ari
             <br />
-            <span className="text-stone-400">Daniel S.</span>
+            <span className="text-stone-400 font-normal">Daniel S.</span>
           </h1>
 
-          <div className="h-px w-full max-w-sm bg-gradient-to-r from-amber-400 to-transparent mb-6 opacity-0" />
+          {/* Subtitle / Role */}
+          <div className="flex items-center gap-3 mb-6 opacity-0">
+            <span className="h-0.5 w-10 bg-amber-400 rounded-full" />
+            <p className="font-mono text-xs sm:text-sm tracking-widest uppercase text-stone-700 font-semibold">
+              Full-Stack Developer &amp; AI / IoT Engineer
+            </p>
+          </div>
 
-          <p
-            className="text-lg md:text-xl text-stone-600 leading-relaxed mb-6 opacity-0"
-            style={{ fontFamily: "'Instrument Sans', 'DM Sans', sans-serif" }}
-          >
-            Full-stack Developer — backend specialist yang suka membangun produk
-            bermanfaat, dari server sampai UI yang terasa <em>smooth</em>.
+          {/* Narrative Statement */}
+          <p className="text-stone-600 text-base sm:text-lg md:text-xl leading-relaxed max-w-xl mb-7 opacity-0">
+            Full-stack Developer &amp; backend specialist yang membangun sistem
+            digital dari nol — mulai dari arsitektur server tangguh, integrasi
+            AI &amp; IoT, hingga antarmuka modern yang terasa <em>smooth</em>{" "}
+            dan presisi.
           </p>
 
-          <div className="flex flex-wrap gap-2 mb-10 opacity-0">
-            {["Laravel", "Next.js", "Flutter", ".NET", "MySQL", "YOLO", "Raspberry Pi"].map((t) => (
+          {/* Key Tech Badges */}
+          <div className="flex flex-wrap gap-2 mb-9 opacity-0">
+            {[
+              "Laravel",
+              "Next.js",
+              "Flutter",
+              ".NET",
+              "MySQL",
+              "YOLO AI",
+              "Raspberry Pi",
+            ].map((tech) => (
               <span
-                key={t}
-                className="text-xs font-medium px-3 py-1.5 rounded-full border border-stone-200 bg-white text-stone-600 shadow-sm"
-                style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+                key={tech}
+                className="text-xs font-medium px-3.5 py-1.5 rounded-full border border-stone-200 bg-white/95 text-stone-700 hover:border-amber-400 hover:bg-amber-50 transition-colors shadow-xs"
               >
-                {t}
+                {tech}
               </span>
             ))}
           </div>
 
-          <div className="flex flex-wrap gap-4 opacity-0">
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center gap-3.5 opacity-0">
             <a
               href="#projects"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-stone-200 bg-white text-stone-700 text-sm font-medium hover:border-amber-400 hover:text-amber-600 transition-colors duration-300 shadow-sm"
-              style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+              className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-full bg-stone-900 text-white text-sm font-medium hover:bg-amber-500 hover:text-stone-950 transition-all duration-300 shadow-md hover:shadow-amber-200"
             >
-              Lihat Projects
+              <span>Lihat Selected Works</span>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="w-4 h-4"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                />
+              </svg>
             </a>
+
+            <button
+              onClick={copyEmail}
+              className="inline-flex items-center gap-2 px-5 py-3.5 rounded-full border border-stone-200 bg-white/95 text-stone-700 text-sm font-medium hover:border-amber-400 hover:text-amber-700 transition-all duration-300 shadow-xs cursor-pointer"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="w-4 h-4 text-stone-500"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                />
+              </svg>
+              <span>{copied ? "Email Tersalin! ✓" : "Salin Email"}</span>
+            </button>
           </div>
         </div>
 
-        <div className="hidden lg:block order-1 lg:order-2" />
+        {/* Right Column: Quynh.moe-Inspired Floating OrbitClock */}
+        <div
+          ref={clockWrapRef}
+          className="lg:col-span-5 flex items-center justify-center order-1 lg:order-2 w-full select-none"
+        >
+          <div className="relative w-full max-w-[360px] sm:max-w-[400px] lg:max-w-[430px] aspect-square flex items-center justify-center">
+            <OrbitClock />
+          </div>
+        </div>
       </div>
     </section>
   );

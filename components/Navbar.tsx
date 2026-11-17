@@ -4,24 +4,97 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 const navLinks = [
+  { label: "Beranda", href: "#overview" },
+  { label: "About", href: "#about" },
+  { label: "Selected Works", href: "#projects" },
+  { label: "My Thing", href: "#services" },
   { label: "Skills", href: "#skills" },
-  { label: "Projects", href: "#projects" },
+  { label: "FAQ", href: "#faq" },
   { label: "Contact", href: "#contact" },
 ];
 
+const roles = [
+  "dev",
+  "full-stack",
+  "ai engineer",
+  "system architect",
+  "next.js artisan",
+  "iot builder",
+];
+
 export default function Navbar() {
-  const [activeSection, setActiveSection] = useState("");
+  const [activeSection, setActiveSection] = useState("overview");
   const [menuOpen, setMenuOpen] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [roleIndex, setRoleIndex] = useState(0);
 
   const navRef = useRef<HTMLElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
   const isScrolled = useRef(false);
+  const blurProxy = useRef({ blur: 0 });
 
-  // ── Scroll: progress + GSAP morph ────────────────────────────────────────
+  // ── William Sham-style Cycling Dynamic Roles ─────────────────────────────
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setRoleIndex((prev) => (prev + 1) % roles.length);
+    }, 2400);
+    return () => clearInterval(timer);
+  }, []);
+
+  // ── Scroll Progress & Smooth Glass Morph In/Out ──────────────────────────
   useEffect(() => {
     const pill = pillRef.current;
     if (!pill) return;
+
+    const applyGlassState = (scrolled: boolean) => {
+      gsap.killTweensOf(pill);
+      gsap.killTweensOf(blurProxy.current);
+
+      if (scrolled) {
+        gsap.to(blurProxy.current, {
+          blur: 16,
+          duration: 0.55,
+          ease: "power3.out",
+          onUpdate: () => {
+            const b = `blur(${blurProxy.current.blur.toFixed(1)}px)`;
+            pill.style.backdropFilter = b;
+            pill.style.setProperty("-webkit-backdrop-filter", b);
+          },
+        });
+        gsap.to(pill, {
+          backgroundColor: "rgba(255, 255, 255, 0.85)",
+          boxShadow: "0 10px 30px -5px rgba(28, 25, 23, 0.07)",
+          borderColor: "rgba(231, 229, 228, 0.88)",
+          paddingTop: "10px",
+          paddingBottom: "10px",
+          duration: 0.55,
+          ease: "power3.out",
+        });
+      } else {
+        gsap.to(blurProxy.current, {
+          blur: 0,
+          duration: 0.5,
+          ease: "power3.inOut",
+          onUpdate: () => {
+            const b =
+              blurProxy.current.blur > 0.2
+                ? `blur(${blurProxy.current.blur.toFixed(1)}px)`
+                : "none";
+            pill.style.backdropFilter = b;
+            pill.style.setProperty("-webkit-backdrop-filter", b);
+          },
+        });
+        gsap.to(pill, {
+          backgroundColor: "rgba(255, 255, 255, 0)",
+          boxShadow: "0 0px 0px 0 rgba(0, 0, 0, 0)",
+          borderColor: "rgba(231, 229, 228, 0)",
+          paddingTop: "14px",
+          paddingBottom: "14px",
+          duration: 0.5,
+          ease: "power3.inOut",
+        });
+      }
+    };
 
     const onScroll = () => {
       const scrollY = window.scrollY;
@@ -30,32 +103,17 @@ export default function Navbar() {
 
       setProgress(docHeight > 0 ? (scrollY / docHeight) * 100 : 0);
 
+      // Top area auto-highlights "Beranda"
+      if (scrollY < 240) {
+        setActiveSection("overview");
+      }
+
       if (scrollY > 40 && !isScrolled.current) {
         isScrolled.current = true;
-        // Aktifkan blur + glass saat scroll
-        pill.style.backdropFilter = "blur(14px)";
-        (pill.style as any).webkitBackdropFilter = "blur(14px)";
-        gsap.to(pill, {
-          backgroundColor: "rgba(255,255,255,0.82)",
-          boxShadow: "0 1px 24px 0 rgba(0,0,0,0.07)",
-          borderColor: "rgba(214,211,208,0.55)",
-          duration: 0.45,
-          ease: "power2.out",
-        });
+        applyGlassState(true);
       } else if (scrollY <= 40 && isScrolled.current) {
         isScrolled.current = false;
-        gsap.to(pill, {
-          backgroundColor: "rgba(255,255,255,0)",
-          boxShadow: "0 0px 0px 0 rgba(0,0,0,0)",
-          borderColor: "rgba(214,211,208,0)",
-          duration: 0.45,
-          ease: "power2.out",
-          onComplete: () => {
-            // Matikan blur setelah animasi selesai
-            pill.style.backdropFilter = "none";
-            (pill.style as any).webkitBackdropFilter = "none";
-          },
-        });
+        applyGlassState(false);
       }
     };
 
@@ -63,7 +121,7 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // ── Active section ────────────────────────────────────────────────────────
+  // ── Active section detection ──────────────────────────────────────────────
   useEffect(() => {
     const ids = navLinks.map((l) => l.href.replace("#", ""));
     const observers: IntersectionObserver[] = [];
@@ -71,8 +129,12 @@ export default function Navbar() {
       const el = document.getElementById(id);
       if (!el) return;
       const obs = new IntersectionObserver(
-        ([entry]) => { if (entry.isIntersecting) setActiveSection(id); },
-        { threshold: 0.35 }
+        ([entry]) => {
+          if (entry.isIntersecting && window.scrollY >= 240) {
+            setActiveSection(id);
+          }
+        },
+        { threshold: 0.22 }
       );
       obs.observe(el);
       observers.push(obs);
@@ -84,114 +146,202 @@ export default function Navbar() {
   useEffect(() => {
     gsap.fromTo(
       navRef.current,
-      { y: -72, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: "power4.out", delay: 0.4, clearProps: "opacity" }
+      { y: -60, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.85,
+        ease: "power4.out",
+        delay: 0.3,
+        clearProps: "opacity",
+      }
     );
   }, []);
 
   // ── Close menu on resize ──────────────────────────────────────────────────
   useEffect(() => {
-    const onResize = () => { if (window.innerWidth >= 768) setMenuOpen(false); };
+    const onResize = () => {
+      if (window.innerWidth >= 768) setMenuOpen(false);
+    };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  // ── Smooth Scroll Handler (Coordinates with Lenis) ────────────────────────
+  const scrollToHref = (href: string) => {
+    setMenuOpen(false);
+    const lenis = (
+      window as unknown as {
+        __lenis?: {
+          scrollTo: (
+            target: number | HTMLElement | string,
+            opts?: { duration?: number; offset?: number }
+          ) => void;
+        };
+      }
+    ).__lenis;
+
+    if (href === "#overview" || href === "#") {
+      setActiveSection("overview");
+      if (lenis) {
+        lenis.scrollTo(0, { duration: 1.1 });
+      } else {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      return;
+    }
+
+    const targetEl = document.querySelector(href) as HTMLElement | null;
+    if (targetEl) {
+      const id = href.replace("#", "");
+      setActiveSection(id);
+      if (lenis) {
+        lenis.scrollTo(targetEl, { duration: 1.1, offset: -24 });
+      } else {
+        targetEl.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   return (
     <>
-      {/* Progress bar */}
+      {/* Scroll Progress Bar */}
       <div className="fixed top-0 left-0 right-0 z-[60] h-[2px] bg-transparent pointer-events-none">
         <div
-          className="h-full bg-amber-400 origin-left"
+          className="h-full bg-gradient-to-r from-amber-400 to-amber-500 origin-left"
           style={{
             width: `${progress}%`,
             transition: "width 0.1s linear",
-            boxShadow: "0 0 8px rgba(251,191,36,0.5)",
+            boxShadow: "0 0 10px rgba(245,158,11,0.6)",
           }}
         />
       </div>
 
-      {/* Navbar */}
+      {/* Main Floating Navbar */}
       <nav
         ref={navRef}
-        className="fixed top-2 left-0 right-0 z-50 px-4 md:px-8"
+        aria-label="Main Navigation"
+        className="fixed top-3 left-0 right-0 z-50 px-4 sm:px-6 lg:px-8"
         style={{ opacity: 0 }}
       >
         <div
           ref={pillRef}
-          className="max-w-5xl mx-auto flex items-center justify-between px-5 py-3 rounded-2xl border"
+          className="max-w-6xl mx-auto flex items-center justify-between px-5 rounded-full border"
           style={{
-            // Awal: transparan, tanpa blur sama sekali
-            backgroundColor: "rgba(255,255,255,0)",
-            boxShadow: "0 0px 0px 0 rgba(0,0,0,0)",
-            borderColor: "rgba(214,211,208,0)",
+            backgroundColor: "rgba(255, 255, 255, 0)",
+            boxShadow: "0 0px 0px 0 rgba(0, 0, 0, 0)",
+            borderColor: "rgba(231, 229, 228, 0)",
             backdropFilter: "none",
             WebkitBackdropFilter: "none",
+            paddingTop: "14px",
+            paddingBottom: "14px",
           }}
         >
-          {/* Brand */}
+          {/* Studio Brand Identity with William Sham-style Dynamic Cycling Roles */}
           <a
-            href="#"
-            className="flex items-center gap-2 group"
-            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            href="#overview"
+            className="flex items-center gap-2 group py-1"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToHref("#overview");
+            }}
           >
-            <span
-              className="text-stone-900 font-bold text-sm tracking-tight group-hover:text-amber-500 transition-colors duration-200"
-              style={{ fontFamily: "'DM Serif Display', Georgia, serif" }}
-            >
+            <span className="text-stone-900 font-display font-bold text-base tracking-tight group-hover:text-amber-600 transition-colors duration-200">
               Grey Ari
             </span>
-            <span className="hidden sm:inline text-stone-300 text-xs font-mono">/</span>
-            <span className="hidden sm:inline text-stone-400 text-xs font-mono">dev</span>
+            <span className="text-stone-300 font-mono text-xs">
+              /
+            </span>
+            <div className="relative h-6 overflow-hidden flex items-center min-w-[75px] sm:min-w-[105px]">
+              <span
+                key={roleIndex}
+                className="inline-block text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-amber-800 bg-amber-50/90 border border-amber-300/80 px-2 py-0.5 rounded-full animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-2xs whitespace-nowrap"
+              >
+                {roles[roleIndex]}
+              </span>
+            </div>
           </a>
 
-          {/* Desktop links */}
+          {/* Desktop Navigation Links */}
           <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => {
               const id = link.href.replace("#", "");
               return (
-                <NavLink key={link.href} href={link.href} isActive={activeSection === id}>
+                <NavLink
+                  key={link.href}
+                  href={link.href}
+                  isActive={activeSection === id}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToHref(link.href);
+                  }}
+                >
                   {link.label}
                 </NavLink>
               );
             })}
           </div>
 
-          {/* CTA + Hamburger */}
+          {/* Desktop CTA & Mobile Toggle */}
           <div className="flex items-center gap-3">
             <a
               href="#contact"
-              className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl
-                bg-stone-900 text-white text-xs font-medium
-                hover:bg-amber-500 transition-colors duration-200 shadow-sm"
-              style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+              onClick={(e) => {
+                e.preventDefault();
+                scrollToHref("#contact");
+              }}
+              className="hidden sm:inline-flex items-center gap-2 px-4 py-2 rounded-full
+                bg-stone-900 text-white text-xs font-medium tracking-wide
+                hover:bg-amber-500 hover:text-stone-950 transition-all duration-200 shadow-sm"
             >
-              Hire Me
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-3 h-3">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M7 17L17 7M17 7H7M17 7v10" />
+              <span>Hire Me</span>
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={2}
+                className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M7 17L17 7M17 7H7M17 7v10"
+                />
               </svg>
             </a>
 
             <button
               onClick={() => setMenuOpen((v) => !v)}
-              className="md:hidden w-9 h-9 flex flex-col items-center justify-center gap-1.5 rounded-xl hover:bg-stone-100 transition-colors duration-200"
-              aria-label="Toggle menu"
+              className="md:hidden w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-full hover:bg-stone-100 transition-colors"
+              aria-label="Toggle navigation menu"
+              aria-expanded={menuOpen}
             >
-              <span className={`block h-0.5 w-5 bg-stone-700 rounded transition-all duration-300 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
-              <span className={`block h-0.5 w-5 bg-stone-700 rounded transition-all duration-300 ${menuOpen ? "opacity-0 scale-x-0" : ""}`} />
-              <span className={`block h-0.5 w-5 bg-stone-700 rounded transition-all duration-300 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+              <span
+                className={`w-5 h-0.5 bg-stone-800 transition-all duration-300 origin-center ${
+                  menuOpen ? "rotate-45 translate-y-2" : ""
+                }`}
+              />
+              <span
+                className={`w-5 h-0.5 bg-stone-800 transition-opacity duration-200 ${
+                  menuOpen ? "opacity-0" : "opacity-100"
+                }`}
+              />
+              <span
+                className={`w-5 h-0.5 bg-stone-800 transition-all duration-300 origin-center ${
+                  menuOpen ? "-rotate-45 -translate-y-2" : ""
+                }`}
+              />
             </button>
           </div>
         </div>
 
-        {/* Mobile dropdown */}
+        {/* Mobile Dropdown Menu */}
         <div
-          className={`md:hidden mx-auto max-w-5xl mt-2 overflow-hidden transition-all duration-300 ease-in-out
-            ${menuOpen ? "max-h-80 opacity-100" : "max-h-0 opacity-0"}`}
+          className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            menuOpen ? "max-h-96 opacity-100 mt-2" : "max-h-0 opacity-0 mt-0"
+          }`}
         >
-          <div
-            className="rounded-2xl shadow-lg p-3 flex flex-col gap-1 border border-stone-200/60"
-            style={{ backgroundColor: "rgba(255,255,255,0.92)", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}
-          >
+          <div className="max-w-6xl mx-auto bg-white/95 backdrop-blur-xl border border-stone-200/90 rounded-3xl p-5 shadow-xl space-y-2">
             {navLinks.map((link) => {
               const id = link.href.replace("#", "");
               const isActive = activeSection === id;
@@ -199,24 +349,32 @@ export default function Navbar() {
                 <a
                   key={link.href}
                   href={link.href}
-                  onClick={() => setMenuOpen(false)}
-                  className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200
-                    ${isActive ? "bg-amber-50 text-stone-900 border border-amber-200" : "text-stone-600 hover:bg-stone-50"}`}
-                  style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    scrollToHref(link.href);
+                  }}
+                  className={`block px-4 py-2.5 rounded-2xl text-sm font-medium transition-colors ${
+                    isActive
+                      ? "bg-amber-50 text-amber-700 font-semibold"
+                      : "text-stone-700 hover:bg-stone-50"
+                  }`}
                 >
                   {link.label}
                 </a>
               );
             })}
-            <div className="h-px bg-stone-100 my-1" />
-            <a
-              href="#contact"
-              onClick={() => setMenuOpen(false)}
-              className="px-4 py-3 rounded-xl text-sm font-medium text-center bg-stone-900 text-white hover:bg-amber-500 transition-colors duration-200"
-              style={{ fontFamily: "'Instrument Sans', sans-serif" }}
-            >
-              Hire Me →
-            </a>
+            <div className="pt-3 border-t border-stone-100">
+              <a
+                href="#contact"
+                onClick={(e) => {
+                  e.preventDefault();
+                  scrollToHref("#contact");
+                }}
+                className="block w-full text-center py-2.5 rounded-full bg-stone-900 text-white text-xs font-semibold tracking-wide hover:bg-amber-500 hover:text-stone-950 transition-colors"
+              >
+                Hire Me ↗
+              </a>
+            </div>
           </div>
         </div>
       </nav>
@@ -225,20 +383,40 @@ export default function Navbar() {
 }
 
 // ── NavLink with GSAP hover ───────────────────────────────────────────────────
-function NavLink({ href, isActive, children }: { href: string; isActive: boolean; children: React.ReactNode }) {
+function NavLink({
+  href,
+  isActive,
+  onClick,
+  children,
+}: {
+  href: string;
+  isActive: boolean;
+  onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  children: React.ReactNode;
+}) {
   const ref = useRef<HTMLAnchorElement>(null);
 
   return (
     <a
       ref={ref}
       href={href}
-      onMouseEnter={() => { if (!isActive) gsap.to(ref.current, { y: -2, duration: 0.2, ease: "power2.out" }); }}
-      onMouseLeave={() => gsap.to(ref.current, { y: 0, duration: 0.25, ease: "power2.inOut" })}
-      className={`relative inline-block px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200
-        ${isActive ? "text-stone-900" : "text-stone-500 hover:text-stone-800"}`}
-      style={{ fontFamily: "'Instrument Sans', sans-serif" }}
+      onClick={onClick}
+      onMouseEnter={() => {
+        if (!isActive)
+          gsap.to(ref.current, { y: -1.5, duration: 0.2, ease: "power2.out" });
+      }}
+      onMouseLeave={() =>
+        gsap.to(ref.current, { y: 0, duration: 0.25, ease: "power2.inOut" })
+      }
+      className={`relative inline-block px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-colors duration-200 ${
+        isActive
+          ? "text-stone-900 font-semibold"
+          : "text-stone-600 hover:text-stone-900"
+      }`}
     >
-      {isActive && <span className="absolute inset-0 rounded-xl bg-amber-50 border border-amber-200" />}
+      {isActive && (
+        <span className="absolute inset-0 rounded-full bg-amber-50 border border-amber-200/80 -z-10 shadow-2xs" />
+      )}
       <span className="relative">{children}</span>
     </a>
   );
