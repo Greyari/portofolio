@@ -98,7 +98,6 @@ interface ControlPoint {
 export default function Contact() {
   const footerRef = useRef<HTMLElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
-  const wordmarkTextRef = useRef<HTMLHeadingElement>(null);
   const rope1Ref = useRef<SVGPathElement>(null);
   const rope2Ref = useRef<SVGPathElement>(null);
   const rope3Ref = useRef<SVGPathElement>(null);
@@ -257,7 +256,7 @@ export default function Contact() {
     };
   }, []);
 
-  // ── Scroll Entrance & Exit Animations ─────────────────────────────────────
+  // ── Scroll Entrance Animations ───────────────────────────────────────────
   useEffect(() => {
     const ctx = gsap.context(() => {
       if (headingRef.current) {
@@ -272,26 +271,6 @@ export default function Contact() {
             scrollTrigger: {
               trigger: headingRef.current,
               start: "top 88%",
-            },
-          }
-        );
-      }
-
-      // "GREY ARI." Slide-In Up on scroll down, Slide-Out Down on scroll up
-      if (wordmarkTextRef.current && footerRef.current) {
-        gsap.fromTo(
-          wordmarkTextRef.current,
-          { y: 110, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.9,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: footerRef.current,
-              start: "top 80%",
-              end: "bottom bottom",
-              toggleActions: "play reverse play reverse",
             },
           }
         );
@@ -471,9 +450,9 @@ export default function Contact() {
             </div>
           </div>
 
-          {/* Bottom Section: Copyright + Giant Geometric Wordmark (`.footer-btm`) */}
-          <div className="pt-5">
-            <div className="flex flex-wrap items-center justify-between gap-4 font-sans text-xs font-semibold text-stone-950/75 mb-2">
+          {/* Bottom Section: Copyright (`.footer-btm`) */}
+          <div className="pt-8 pb-4">
+            <div className="flex flex-wrap items-center justify-between gap-4 font-sans text-xs font-semibold text-stone-950/75">
               <span>
                 © Copyright {new Date().getFullYear()} — Grey Ari Daniel
                 Simatupang
@@ -484,16 +463,6 @@ export default function Contact() {
               >
                 Back to top ↑
               </button>
-            </div>
-
-            {/* Clean Editorial Wordmark with Scroll In (up) & Out (down) Animation */}
-            <div className="w-full overflow-hidden text-center select-none pt-4 pb-1">
-              <h1
-                ref={wordmarkTextRef}
-                className="font-display font-black text-[15.5vw] sm:text-[14.8vw] lg:text-[13.8vw] uppercase tracking-tighter text-stone-900 leading-[0.82] will-change-transform drop-shadow-[0_4px_16px_rgba(28,25,23,0.12)] whitespace-nowrap"
-              >
-                GREY ARI.
-              </h1>
             </div>
           </div>
         </div>

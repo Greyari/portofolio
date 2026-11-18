@@ -24,9 +24,10 @@ export default function Home() {
       <FaqSection />
       {/* William Sham-style Interactive Wave Divider above Footer (Amber-500) */}
       <InteractiveWaveDivider
+        topColor="#fafaf9"
         fillColor="#f59e0b"
-        strokeColor="rgba(28, 25, 23, 0.18)"
-        className="-my-1 z-10"
+        strokeColor="rgba(28, 25, 23, 0.12)"
+        className="-mb-1 z-10"
       />
       <Contact />
     </main>

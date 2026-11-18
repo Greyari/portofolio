@@ -48,7 +48,7 @@ export default function FaqSection() {
   return (
     <section
       id="faq"
-      className="relative px-4 sm:px-8 md:px-14 lg:px-20 py-28 bg-stone-50/80 border-t border-stone-200/80"
+      className="relative px-4 sm:px-8 md:px-14 lg:px-20 py-28 bg-[#fafaf9] border-t border-stone-200/80 border-b-0"
     >
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         {/* Left Column: Sticky Title + Static Hand-Drawn Sleeping Cat SVG (`.faq-left` in Two26) */}
@@ -153,14 +153,14 @@ export default function FaqSection() {
             const isOpen = openIndex === idx;
             return (
               <div key={idx} className="flex flex-col">
-                {/* Question Block (`.question-block` in Two26 Studio, fixed width to prevent layout stutter) */}
+                {/* Question Block (`.question-block` in Two26 Studio: rounded with sharp bottom-left) */}
                 <button
                   onClick={() => setOpenIndex(isOpen ? -1 : idx)}
                   aria-expanded={isOpen}
-                  className={`w-full text-left transition-colors duration-300 px-6 py-4 sm:py-5 rounded-[26px] rounded-bl-xs flex items-center justify-between gap-4 cursor-pointer ${
+                  className={`text-left transition-all duration-500 ease-out px-6 py-4 sm:py-5 rounded-tl-[36px] sm:rounded-tl-[44px] rounded-tr-[36px] sm:rounded-tr-[44px] rounded-br-[36px] sm:rounded-br-[44px] rounded-bl-none flex items-center justify-between gap-4 cursor-pointer will-change-[width,border-color,background-color] ${
                     isOpen
-                      ? "bg-white border-2 border-amber-500 text-stone-900 shadow-sm"
-                      : "bg-stone-200/75 hover:bg-amber-100/70 border-2 border-transparent text-stone-800"
+                      ? "w-full sm:w-[58%] bg-white border-2 border-amber-500 text-stone-900 shadow-sm"
+                      : "w-full bg-[#f2e3da]/85 hover:bg-[#ebd8ce] border-2 border-transparent text-stone-800"
                   }`}
                 >
                   <span className="font-semibold text-sm sm:text-base leading-snug">
@@ -177,9 +177,9 @@ export default function FaqSection() {
                   </span>
                 </button>
 
-                {/* Answer Reply Chat Bubble + Avatar Badge (Smooth Silk Grid Accordion matching Two26) */}
+                {/* Answer Area (`.faq-block-btm`: bottom-right aligned with sharp corner facing avatar) */}
                 <div
-                  className="grid transition-[grid-template-rows,opacity] duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden"
+                  className="grid transition-[grid-template-rows,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden"
                   style={{
                     gridTemplateRows: isOpen ? "1fr" : "0fr",
                     opacity: isOpen ? 1 : 0,
@@ -187,21 +187,21 @@ export default function FaqSection() {
                 >
                   <div className="overflow-hidden">
                     <div
-                      className={`pt-3 pb-1 flex items-end justify-end gap-3 pl-6 sm:pl-16 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
+                      className={`pt-3 pb-1 flex items-end justify-end gap-2.5 sm:gap-3 pl-4 sm:pl-16 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] origin-bottom-right ${
                         isOpen
                           ? "translate-y-0 opacity-100 scale-100"
-                          : "-translate-y-2 opacity-0 scale-[0.98]"
+                          : "translate-y-3 opacity-0 scale-95"
                       }`}
                     >
-                      {/* Right-aligned Reply Chat Bubble */}
-                      <div className="rounded-[26px] rounded-br-xs bg-white border-2 border-stone-900 p-5 sm:p-6 shadow-[4px_4px_0_0_#1c1917] text-stone-700 text-sm sm:text-base leading-relaxed">
+                      {/* Right-aligned Reply Chat Bubble (Two26 `.answer-block` style) */}
+                      <div className="w-[85%] sm:w-[72%] rounded-tl-[24px] sm:rounded-tl-[30px] rounded-tr-[24px] sm:rounded-tr-[30px] rounded-bl-[24px] sm:rounded-bl-[30px] rounded-br-none bg-[#fafaf9] border border-stone-900/15 p-5 sm:p-6 shadow-[2px_2px_0_0_rgba(28,25,23,0.06)] text-stone-700 text-sm sm:text-base leading-relaxed">
                         {item.a}
                       </div>
 
                       {/* Circular "GA" Studio Avatar Badge (`.faq-logo` in Two26) */}
                       <div
                         title="Grey Ari Daniel"
-                        className="w-10 h-10 rounded-full bg-amber-500 text-stone-950 font-display font-bold text-xs flex items-center justify-center shrink-0 shadow-xs border-2 border-stone-900 mb-0.5"
+                        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-amber-500 text-stone-950 font-display font-extrabold text-xs sm:text-sm flex items-center justify-center shrink-0 shadow-xs border border-amber-600/30 mb-0.5"
                       >
                         GA
                       </div>

@@ -181,50 +181,16 @@ const projects: ExtendedProjectData[] = [
 // ─── Single Two26-Style Portrait Project Card ──────────────────────────────────
 function ProjectCard({
   project,
-  index,
   onOpenModal,
 }: {
   project: ExtendedProjectData;
-  index: number;
+  index?: number;
   onOpenModal: (p: ExtendedProjectData) => void;
 }) {
   const cardWrapRef = useRef<HTMLDivElement>(null);
   const brushPathRef = useRef<SVGPathElement>(null);
   const pathLengthRef = useRef<number>(2400);
   const [hovered, setHovered] = useState(false);
-
-  // 3D Perspective + Clip-Mask Entrance on Scroll (Two26 Studio style)
-  useEffect(() => {
-    const el = cardWrapRef.current;
-    if (!el) return;
-
-    gsap.fromTo(
-      el,
-      {
-        opacity: 0,
-        y: 65,
-        rotateX: 16,
-        rotateY: -10,
-        rotateZ: -3,
-        scale: 0.92,
-      },
-      {
-        opacity: 1,
-        y: 0,
-        rotateX: 0,
-        rotateY: 0,
-        rotateZ: 0,
-        scale: 1,
-        duration: 0.85,
-        delay: (index % 3) * 0.12,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: el,
-          start: "top 90%",
-        },
-      }
-    );
-  }, [index]);
 
   // Initialize SVG brush path strictly hidden so it NEVER appears colored before hover
   useEffect(() => {

@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 interface InteractiveWaveDividerProps {
   fillColor?: string;
+  topColor?: string;
   strokeColor?: string;
   height?: number;
   flip?: boolean;
@@ -11,7 +12,8 @@ interface InteractiveWaveDividerProps {
 }
 
 export default function InteractiveWaveDivider({
-  fillColor = "#fafaf9",
+  fillColor = "#f59e0b",
+  topColor = "#fafaf9",
   strokeColor = "rgba(28, 25, 23, 0.12)",
   height = 72,
   flip = false,
@@ -248,7 +250,7 @@ export default function InteractiveWaveDivider({
     <div
       ref={containerRef}
       className={`relative w-full overflow-hidden select-none pointer-events-auto ${className}`}
-      style={{ height: `${height}px` }}
+      style={{ height: `${height}px`, backgroundColor: topColor }}
       aria-hidden="true"
     >
       <svg
@@ -256,11 +258,13 @@ export default function InteractiveWaveDivider({
         preserveAspectRatio="none"
         className="absolute inset-0 w-full h-full block overflow-visible"
       >
+        {/* Background fills the entire top area matching the section above, eliminating any white gap */}
+        <rect width="100%" height="100%" fill={topColor} />
         <path
           ref={pathRef}
           fill={fillColor}
           stroke={strokeColor}
-          strokeWidth={1.8}
+          strokeWidth={1.5}
           vectorEffect="non-scaling-stroke"
         />
       </svg>

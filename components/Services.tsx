@@ -32,7 +32,7 @@ const serviceItems: ServiceItem[] = [
     word1: "BACKEND",
     word2: "ENGINEERING",
     desc: "Membangun fondasi server Laravel & .NET yang tangguh, cepat, dan siap menangani logika bisnis kompleks.",
-    leftPercent: "md:left-[54%] lg:left-[58%]",
+    leftPercent: "md:left-[70%] lg:left-[71.5%]",
     tilt: -5,
     iconType: "backend",
   },
@@ -41,7 +41,7 @@ const serviceItems: ServiceItem[] = [
     word1: "FRONTEND",
     word2: "& NEXT.JS",
     desc: "Mengubah desain menjadi pengalaman web interaktif yang terasa mulus, responsif, dan mudah dinavigasi.",
-    leftPercent: "md:left-[32%] lg:left-[28%] xl:left-[25%]",
+    leftPercent: "md:left-[33%] lg:left-[32.5%]",
     tilt: -5,
     iconType: "frontend",
   },
@@ -50,7 +50,7 @@ const serviceItems: ServiceItem[] = [
     word1: "MOBILE",
     word2: "APPS",
     desc: "Aplikasi lintas platform dengan Flutter yang tampil tajam dan berjalan cepat di Android maupun iOS.",
-    leftPercent: "md:left-[40%] lg:left-[44%]",
+    leftPercent: "md:left-[53%] lg:left-[54.5%]",
     tilt: -5,
     iconType: "mobile",
   },
@@ -59,7 +59,7 @@ const serviceItems: ServiceItem[] = [
     word1: "VISION",
     word2: "& AI",
     desc: "Integrasi model YOLOv8 & Groq AI untuk deteksi objek kamera real-time dan automasi cerdas.",
-    leftPercent: "md:left-[54%] lg:left-[60%]",
+    leftPercent: "md:left-[75%] lg:left-[76.5%]",
     tilt: -5,
     iconType: "ai",
   },
@@ -68,7 +68,7 @@ const serviceItems: ServiceItem[] = [
     word1: "IOT &",
     word2: "HARDWARE",
     desc: "Menghubungkan kode dengan dunia fisik lewat Raspberry Pi, ESP32, sensor RFID, dan perangkat pintar.",
-    leftPercent: "md:left-[30%] lg:left-[27%] xl:left-[25%]",
+    leftPercent: "md:left-[47%] lg:left-[47.0%]",
     tilt: -5,
     iconType: "iot",
   },
@@ -77,7 +77,7 @@ const serviceItems: ServiceItem[] = [
     word1: "CLOUD &",
     word2: "DEVOPS",
     desc: "Setup deployment yang stabil di Linux Lubuntu, Railway, Cloudflare, dan Vercel beserta optimasi MySQL.",
-    leftPercent: "md:left-[46%] lg:left-[50%]",
+    leftPercent: "md:left-[27%] lg:left-[26.0%]",
     tilt: -5,
     iconType: "database",
   },
@@ -86,7 +86,7 @@ const serviceItems: ServiceItem[] = [
     word1: "SYSTEM",
     word2: "ARCHITECTURE",
     desc: "Menjaga seluruh bagian sistem bergerak selaras, dari rancangan database hingga detail interaksi terkecil.",
-    leftPercent: "md:left-[32%] lg:left-[29%] xl:left-[26%]",
+    leftPercent: "md:left-[22%] lg:left-[20.5%]",
     tilt: -5,
     iconType: "architecture",
   },
@@ -452,29 +452,29 @@ export default function Services() {
               ref={(el) => {
                 rowRefs.current[idx] = el;
               }}
-              className="relative w-full flex items-center"
+              className="relative w-full flex items-center min-h-[140px]"
             >
               <div
-                className={`relative flex flex-col items-center mx-auto md:mx-0 ${item.leftPercent} md:-translate-x-1/2 max-w-[92vw] px-2`}
+                className={`relative flex flex-col items-center mx-auto md:mx-0 md:absolute ${item.leftPercent} md:-translate-x-1/2`}
               >
-                {/* Two Uppercase Words Flanking the Expanding `.service-svg` */}
-                <div className="flex items-center justify-center whitespace-nowrap">
-                  <span className="font-display text-3xl sm:text-5xl lg:text-6xl font-bold text-amber-500 uppercase tracking-tight leading-none drop-shadow-[0_2px_0_#1c1917]">
+                {/* Two Uppercase Words Flanking the Center Icon (Dead-center on the line!) */}
+                <div className="relative flex items-center justify-center">
+                  <span className="font-display text-3xl sm:text-5xl lg:text-6xl font-bold text-amber-500 uppercase tracking-tight leading-none drop-shadow-[0_2px_0_#1c1917] whitespace-nowrap text-right pr-1 sm:pr-2">
                     {item.word1}
                   </span>
 
-                  {/* `.service-svg`: Expands from width 0 -> 88px on scroll, splitting the words apart! */}
+                  {/* `.service-svg`: Expands from width 0 -> 88px directly centered on the path line! */}
                   <div
                     ref={(el) => {
                       iconBoxesRef.current[idx] = el;
                     }}
-                    className="inline-flex items-center justify-center overflow-hidden shrink-0 mx-1"
+                    className="inline-flex items-center justify-center overflow-hidden shrink-0 mx-0.5"
                     style={{ width: 0, opacity: 0 }}
                   >
                     <AnimatedDevIcon type={item.iconType} />
                   </div>
 
-                  <span className="font-display text-3xl sm:text-5xl lg:text-6xl font-bold text-stone-900 uppercase tracking-tight leading-none pl-2">
+                  <span className="font-display text-3xl sm:text-5xl lg:text-6xl font-bold text-stone-900 uppercase tracking-tight leading-none whitespace-nowrap text-left pl-1 sm:pl-2">
                     {item.word2}
                   </span>
                 </div>

@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
 
 interface ContributionDay {
   contributionCount: number;
@@ -51,6 +52,9 @@ export default function GitHubGraph() {
   const [selectedDay, setSelectedDay] = useState<ContributionDay | null>(null);
   const [displayedDay, setDisplayedDay] = useState<ContributionDay | null>(null);
 
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const innerCardRef = useRef<HTMLDivElement>(null);
+
   const handleSelectDay = (day: ContributionDay) => {
     if (selectedDay?.date === day.date) {
       setSelectedDay(null);
@@ -59,6 +63,44 @@ export default function GitHubGraph() {
       setSelectedDay(day);
     }
   };
+
+  // ── Butter-Smooth GSAP Drawer Animation for Selected Contribution Day ────
+  useEffect(() => {
+    const el = drawerRef.current;
+    const card = innerCardRef.current;
+    if (!el || !card) return;
+
+    if (selectedDay) {
+      gsap.killTweensOf([el, card]);
+      gsap.to(el, {
+        height: "auto",
+        marginTop: 16,
+        duration: 0.5,
+        ease: "power3.out",
+      });
+      gsap.fromTo(
+        card,
+        { opacity: 0, y: -12, scale: 0.98 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power2.out", delay: 0.05 }
+      );
+    } else {
+      gsap.killTweensOf([el, card]);
+      gsap.to(card, {
+        opacity: 0,
+        y: -8,
+        scale: 0.98,
+        duration: 0.22,
+        ease: "power2.in",
+      });
+      gsap.to(el, {
+        height: 0,
+        marginTop: 0,
+        duration: 0.38,
+        ease: "power3.inOut",
+        delay: 0.06,
+      });
+    }
+  }, [selectedDay]);
 
   useEffect(() => {
     fetch("/api/github")
@@ -215,54 +257,54 @@ export default function GitHubGraph() {
             ))}
           </div>
 
-          {/* Interactive Click Details Drawer (Silky smooth grid-rows expansion & collapse) */}
+          {/* Interactive Click Details Drawer (GSAP Butter-Smooth Height, Fade & Slide) */}
           <div
-            className={`grid transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] overflow-hidden ${
-              selectedDay
-                ? "grid-rows-[1fr] opacity-100 mt-4"
-                : "grid-rows-[0fr] opacity-0 mt-0 pointer-events-none"
-            }`}
+            ref={drawerRef}
+            className="w-full overflow-hidden"
+            style={{ height: 0, marginTop: 0 }}
           >
-            <div className="overflow-hidden">
-              {displayedDay && (
-                <div className="p-4 rounded-2xl bg-amber-50 border-2 border-stone-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-11 h-11 rounded-xl bg-amber-500 text-stone-950 font-display font-extrabold text-lg flex items-center justify-center shrink-0 border-2 border-stone-900 shadow-xs">
-                      {displayedDay.contributionCount}
-                    </div>
-                    <div>
-                      <h4 className="font-display font-bold text-stone-900 text-sm sm:text-base">
-                        {formatIndoDate(displayedDay.date)}
-                      </h4>
-                      <p className="font-mono text-xs text-amber-900">
-                        {displayedDay.contributionCount > 0
-                          ? `${displayedDay.contributionCount} commit / kontribusi tercatat di GitHub @Greyari`
-                          : "Tidak ada commit publik pada tanggal ini."}
-                      </p>
-                    </div>
+            {displayedDay && (
+              <div
+                ref={innerCardRef}
+                className="p-4 rounded-2xl bg-amber-50 border-2 border-stone-900 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm will-change-transform"
+                style={{ opacity: 0 }}
+              >
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-xl bg-amber-500 text-stone-950 font-display font-extrabold text-lg flex items-center justify-center shrink-0 border-2 border-stone-900 shadow-xs">
+                    {displayedDay.contributionCount}
                   </div>
-
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={`https://github.com/Greyari?tab=overview&from=${displayedDay.date}&to=${displayedDay.date}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-stone-900 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-amber-500 hover:text-stone-950 transition-colors shadow-xs"
-                    >
-                      <span>Buka di GitHub</span>
-                      <span className="text-amber-400">↗</span>
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedDay(null)}
-                      className="px-3.5 py-2 rounded-full bg-white text-stone-700 border border-stone-300 font-mono text-xs font-bold hover:bg-stone-100 hover:text-stone-950 transition-colors cursor-pointer"
-                    >
-                      Tutup ×
-                    </button>
+                  <div>
+                    <h4 className="font-display font-bold text-stone-900 text-sm sm:text-base">
+                      {formatIndoDate(displayedDay.date)}
+                    </h4>
+                    <p className="font-mono text-xs text-amber-900">
+                      {displayedDay.contributionCount > 0
+                        ? `${displayedDay.contributionCount} commit / kontribusi tercatat di GitHub @Greyari`
+                        : "Tidak ada commit publik pada tanggal ini."}
+                    </p>
                   </div>
                 </div>
-              )}
-            </div>
+
+                <div className="flex items-center gap-2">
+                  <a
+                    href={`https://github.com/Greyari?tab=overview&from=${displayedDay.date}&to=${displayedDay.date}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-stone-900 text-white font-mono text-xs font-bold uppercase tracking-wider hover:bg-amber-500 hover:text-stone-950 transition-colors shadow-xs"
+                  >
+                    <span>Buka di GitHub</span>
+                    <span className="text-amber-400">↗</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedDay(null)}
+                    className="px-3.5 py-2 rounded-full bg-white text-stone-700 border border-stone-300 font-mono text-xs font-bold hover:bg-stone-100 hover:text-stone-950 transition-colors cursor-pointer"
+                  >
+                    Tutup ×
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Footer of Card: Interactive Hover Status & Legend */}

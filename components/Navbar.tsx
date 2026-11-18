@@ -26,20 +26,45 @@ export default function Navbar() {
   const [activeSection, setActiveSection] = useState("overview");
   const [menuOpen, setMenuOpen] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [roleIndex, setRoleIndex] = useState(0);
+
+  // ── Typewriter (Typing In & Out) State ────────────────────────────────────
+  const [typewriterText, setTypewriterText] = useState("");
+  const [roleIdx, setRoleIdx] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const navRef = useRef<HTMLElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
   const isScrolled = useRef(false);
   const blurProxy = useRef({ blur: 0 });
 
-  // ── William Sham-style Cycling Dynamic Roles ─────────────────────────────
+  // ── Smooth Typewriter Effect for Brand Role ──────────────────────────────
   useEffect(() => {
-    const timer = setInterval(() => {
-      setRoleIndex((prev) => (prev + 1) % roles.length);
-    }, 2400);
-    return () => clearInterval(timer);
-  }, []);
+    const currentRole = roles[roleIdx];
+    let timeout: NodeJS.Timeout;
+
+    if (!isDeleting && typewriterText === currentRole) {
+      // Pause at full word before backspacing out
+      timeout = setTimeout(() => setIsDeleting(true), 1600);
+    } else if (isDeleting && typewriterText === "") {
+      // Finished backspacing: switch to next role after slight pause
+      timeout = setTimeout(() => {
+        setIsDeleting(false);
+        setRoleIdx((prev) => (prev + 1) % roles.length);
+      }, 300);
+    } else {
+      // Typing in (85ms) or deleting out (42ms)
+      const speed = isDeleting ? 42 : 85;
+      timeout = setTimeout(() => {
+        setTypewriterText((prev) =>
+          isDeleting
+            ? currentRole.slice(0, prev.length - 1)
+            : currentRole.slice(0, prev.length + 1)
+        );
+      }, speed);
+    }
+
+    return () => clearTimeout(timeout);
+  }, [typewriterText, isDeleting, roleIdx]);
 
   // ── Scroll Progress & Smooth Glass Morph In/Out ──────────────────────────
   useEffect(() => {
@@ -237,28 +262,24 @@ export default function Navbar() {
             paddingBottom: "14px",
           }}
         >
-          {/* Studio Brand Identity with William Sham-style Dynamic Cycling Roles */}
+          {/* Studio Brand Identity with Fixed-Width Typewriter to Protect Navbar Links */}
           <a
             href="#overview"
-            className="flex items-center gap-2 group py-1"
+            className="flex items-center gap-2 group py-1 shrink-0 w-[215px] sm:w-[245px]"
             onClick={(e) => {
               e.preventDefault();
               scrollToHref("#overview");
             }}
           >
-            <span className="text-stone-900 font-display font-bold text-base tracking-tight group-hover:text-amber-600 transition-colors duration-200">
+            <span className="text-stone-900 font-display font-bold text-base tracking-tight group-hover:text-amber-600 transition-colors duration-200 shrink-0">
               Grey Ari
             </span>
-            <span className="text-stone-300 font-mono text-xs">
+            <span className="text-stone-300 font-mono text-xs shrink-0">
               /
             </span>
-            <div className="relative h-6 overflow-hidden flex items-center min-w-[75px] sm:min-w-[105px]">
-              <span
-                key={roleIndex}
-                className="inline-block text-[10px] sm:text-[11px] font-mono tracking-wider uppercase text-amber-800 bg-amber-50/90 border border-amber-300/80 px-2 py-0.5 rounded-full animate-in fade-in slide-in-from-bottom-2 duration-300 shadow-2xs whitespace-nowrap"
-              >
-                {roles[roleIndex]}
-              </span>
+            <div className="flex items-center font-mono text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase text-amber-800 bg-amber-50/90 border border-amber-300/80 px-2 py-0.5 rounded-full shadow-2xs whitespace-nowrap min-w-0 max-w-[125px] sm:max-w-[145px]">
+              <span className="truncate">{typewriterText}</span>
+              <span className="inline-block w-[1.5px] h-3 bg-amber-600 ml-0.5 animate-pulse shrink-0" />
             </div>
           </a>
 
