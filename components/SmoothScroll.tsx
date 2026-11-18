@@ -10,7 +10,12 @@ gsap.registerPlugin(ScrollTrigger);
 
 export default function SmoothScroll() {
   useEffect(() => {
-    // Initialize standard Lenis smooth scrolling (same engine Two26 Studio uses)
+    // Prevent browser native scroll jumping during reload while GSAP computes positions
+    if (typeof window !== "undefined" && "scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+
+    // Initialize standard Lenis smooth scrolling (matching Two26 Studio luxury feel)
     const lenis = new Lenis({
       duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -33,6 +38,13 @@ export default function SmoothScroll() {
 
     // Disable GSAP lag smoothing to prevent scroll jumps
     gsap.ticker.lagSmoothing(0);
+
+    // Refresh ScrollTrigger when custom fonts are fully loaded
+    if (typeof document !== "undefined" && document.fonts) {
+      document.fonts.ready.then(() => {
+        ScrollTrigger.refresh();
+      });
+    }
 
     // Seamless anchor link handling
     const onAnchorClick = (e: MouseEvent) => {

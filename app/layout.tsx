@@ -65,7 +65,6 @@ export default function RootLayout({
     <html
       lang="id"
       className={cn(
-        "scroll-smooth",
         dmSerifDisplay.variable,
         instrumentSans.variable,
         jetBrainsMono.variable

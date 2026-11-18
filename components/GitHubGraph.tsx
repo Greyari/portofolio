@@ -124,7 +124,7 @@ export default function GitHubGraph() {
     );
   }
 
-  if (!data) return null;
+  if (!data || !data.weeks || data.weeks.length === 0) return null;
 
   const weeks = data.weeks.slice(-52);
 
