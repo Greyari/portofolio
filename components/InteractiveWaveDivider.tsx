@@ -12,9 +12,11 @@ interface InteractiveWaveDividerProps {
 }
 
 /**
- * Interactive Wave Divider with Spring Physics
- * Directly replicating the natural, subtle, realistic wave divider from createdbywilliam.co.za
- * Gentle amplitude, soft water-tension spring physics, responsive to direct cursor hover.
+ * Interactive Wave Divider with Damped Spring Surface Physics
+ * Replicating createdbywilliam.co.za with refined liquid surface tension:
+ * - Subtle, realistic ripple response on hover (gentle, not exaggerated)
+ * - Calms down quickly (~1.0s) like real water with proper damping & viscosity
+ * - Rate-limited surface crossing detection prevents compounding twitchy movements
  */
 export default function InteractiveWaveDivider({
   fillColor = "#f59e0b",
@@ -40,7 +42,7 @@ export default function InteractiveWaveDivider({
     svg.setAttribute("viewBox", `0 0 ${W} ${F}`);
 
     // Discretization matching createdbywilliam.co.za:
-    // N between 24 and 72 nodes spaced ~22px
+    // ~24 to 72 nodes spaced ~22px
     let N = Math.round(Math.min(72, Math.max(24, W / 22)));
     let S = W / N;
 
@@ -48,9 +50,9 @@ export default function InteractiveWaveDivider({
     let v = new Float32Array(N + 1);
     let was = new Float32Array(N + 1);
 
-    // Subtle natural rest curve (realistic, not excessive)
+    // Subtle natural rest curve (gentle, organic wave)
     let base = F * 0.46;
-    let amp = Math.min(11, F * 0.15);
+    let amp = Math.min(9, F * 0.13); // Gentle resting wave amplitude
     let len = W / (W < 760 ? 1.15 : 1.8);
 
     const rest = (x: number) => base + Math.sin((x / len) * Math.PI * 2 + 0.8) * amp;
@@ -65,14 +67,14 @@ export default function InteractiveWaveDivider({
       v = new Float32Array(N + 1);
       was = new Float32Array(N + 1);
       base = F * 0.46;
-      amp = Math.min(11, F * 0.15);
+      amp = Math.min(9, F * 0.13);
       len = W / (W < 760 ? 1.15 : 1.8);
       draw(1);
     };
 
     window.addEventListener("resize", resize, { passive: true });
 
-    // Pointer velocity tracking restricted strictly to container bounds
+    // Pointer tracking with cooldown to prevent compounding multi-event twitch
     const bat = {
       x: -9999,
       y: -9999,
@@ -81,17 +83,20 @@ export default function InteractiveWaveDivider({
       t: performance.now(),
     };
 
+    let lastPokeTime = 0;
     let awake = false;
     let isIntersecting = false;
     let rafId = 0;
 
-    // Gentle poke with gaussian spread around impulse point
+    // Refined poke: applies gentle impulse with gaussian falloff
     const poke = (x: number, imp: number) => {
       const f = x / S;
-      const minI = Math.max(0, Math.floor(f - 5));
-      const maxI = Math.min(N, Math.ceil(f + 5));
+      const minI = Math.max(0, Math.floor(f - 4));
+      const maxI = Math.min(N, Math.ceil(f + 4));
+      // Tightly bounded impulse
+      const clampedImp = Math.max(-6, Math.min(6, imp));
       for (let i = minI; i <= maxI; i++) {
-        v[i] += imp * Math.exp(-((i - f) ** 2) / 3.2);
+        v[i] += clampedImp * Math.exp(-((i - f) ** 2) / 3.0);
       }
       awake = true;
       if (!rafId && isIntersecting) {
@@ -100,32 +105,42 @@ export default function InteractiveWaveDivider({
       }
     };
 
-    // Hover interaction: ONLY triggers when cursor passes directly over the wave divider
+    // Hover interaction: Only triggers on genuine surface crossing or controlled proximity
     const onPointerMove = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();
       const now = performance.now();
-      const dt = Math.max(0.005, (now - bat.t) / 1000);
+      const dt = Math.max(0.008, (now - bat.t) / 1000);
 
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      if (bat.x !== -9999) {
-        bat.vx = (x - bat.x) / dt;
-        bat.vy = (y - bat.y) / dt;
+      const prevX = bat.x;
+      const prevY = bat.y;
+
+      if (prevX !== -9999) {
+        bat.vx = (x - prevX) / dt;
+        bat.vy = (y - prevY) / dt;
       }
       bat.x = x;
       bat.y = y;
       bat.t = now;
 
-      // Realistic trigger: only when cursor is close to the actual wave surface
-      if (x >= 0 && x <= W) {
+      // Rate limit pokes to at least 50ms apart so rapid mousemove events don't amplify into big waves
+      if (now - lastPokeTime < 50) return;
+
+      if (x >= 0 && x <= W && prevY !== -9999) {
         const surfY = rest(x);
         const dist = Math.abs(y - surfY);
-        if (dist < 28) {
-          const vyClamped = Math.max(-360, Math.min(360, bat.vy));
-          const vxClamped = Math.min(420, Math.abs(bat.vx));
-          const imp = vyClamped * 0.11 + vxClamped * 0.045;
-          if (Math.abs(imp) > 0.4) {
+        // Detect if cursor crossed the surface line or moved right across it
+        const crossed = (prevY - surfY) * (y - surfY) <= 0;
+
+        if (crossed || dist < 18) {
+          lastPokeTime = now;
+          const vyClamped = Math.max(-200, Math.min(200, bat.vy));
+          const vxClamped = Math.min(250, Math.abs(bat.vx));
+          // Gentle, subtle impulse (not excessive!)
+          const imp = vyClamped * 0.022 + vxClamped * 0.008;
+          if (Math.abs(imp) > 0.25) {
             poke(x, imp);
           }
         }
@@ -165,11 +180,11 @@ export default function InteractiveWaveDivider({
       }
     };
 
-    // Physics step with William Sham's exact constants (FK = 26, FD = 3.4)
+    // Physics step with high damping (FD = 6.2, FK = 28) for calm, rapid settling (~1.0s)
     const DT = 1 / 120;
-    const FK = 26;
-    const FD = 3.4;
-    const cap = F * 0.38;
+    const FK = 28; // Spring stiffness
+    const FD = 6.2; // Viscous damping factor (calms down fast and realistically!)
+    const cap = Math.min(8, F * 0.14); // Maximum displacement capped at ~8px for subtle elegance
 
     let prevTime = performance.now();
     let acc = 0;
@@ -195,6 +210,8 @@ export default function InteractiveWaveDivider({
           const r = u[i < N ? i + 1 : N - 1];
           const accel = T * (l + r - 2 * u[i]) - FK * u[i] - FD * v[i];
           v[i] += accel * DT;
+          // Fluid exponential velocity decay for smooth settling
+          v[i] *= 0.988;
           u[i] = Math.max(-cap, Math.min(cap, u[i] + v[i] * DT));
         }
 
@@ -205,7 +222,7 @@ export default function InteractiveWaveDivider({
       const fInterp = Math.min(1, Math.max(0, acc / DT));
       draw(fInterp);
 
-      // Check auto-sleep
+      // Fast, clean settling check (calms down in ~1 second)
       let maxU = 0;
       let maxV = 0;
       for (let i = 0; i <= N; i++) {
@@ -215,7 +232,7 @@ export default function InteractiveWaveDivider({
         if (absV > maxV) maxV = absV;
       }
 
-      if (maxU < 0.03 && maxV < 0.5) {
+      if (maxU < 0.04 && maxV < 0.4) {
         u.fill(0);
         v.fill(0);
         was.fill(0);
@@ -228,7 +245,7 @@ export default function InteractiveWaveDivider({
       rafId = requestAnimationFrame(loop);
     };
 
-    // Pause physics when out of viewport; perform one gentle welcoming wave when scrolled into view
+    // Pause physics when out of viewport; perform subtle welcoming ripple on first view
     let hasWokenOnce = false;
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -236,7 +253,7 @@ export default function InteractiveWaveDivider({
         if (isIntersecting) {
           if (!hasWokenOnce) {
             hasWokenOnce = true;
-            poke(W * 0.5, 9);
+            poke(W * 0.5, 3.5); // Very gentle 3.5px ripple
           }
           if (awake && !rafId) {
             prevTime = performance.now();
