@@ -14,7 +14,7 @@ interface ServiceItem {
   word1: string;
   word2: string;
   desc: string;
-  leftPercent: string; // Matches Two26 horizontal stagger along the path
+  leftPercent: string; // Calibrated safe bounds across mobile, tablet, laptop, and desktop
   tilt: number;
   iconType:
     | "backend"
@@ -32,8 +32,8 @@ const serviceItems: ServiceItem[] = [
     word1: "BACKEND",
     word2: "ENGINEERING",
     desc: "Membangun fondasi server Laravel & .NET yang tangguh, cepat, dan siap menangani logika bisnis kompleks.",
-    leftPercent: "md:left-[70%] lg:left-[71.5%]",
-    tilt: -5,
+    leftPercent: "md:left-[64%] lg:left-[67%] xl:left-[70%]",
+    tilt: -4,
     iconType: "backend",
   },
   {
@@ -41,8 +41,8 @@ const serviceItems: ServiceItem[] = [
     word1: "FRONTEND",
     word2: "& NEXT.JS",
     desc: "Mengubah desain menjadi pengalaman web interaktif yang terasa mulus, responsif, dan mudah dinavigasi.",
-    leftPercent: "md:left-[33%] lg:left-[32.5%]",
-    tilt: -5,
+    leftPercent: "md:left-[36%] lg:left-[34%] xl:left-[32.5%]",
+    tilt: -4,
     iconType: "frontend",
   },
   {
@@ -50,8 +50,8 @@ const serviceItems: ServiceItem[] = [
     word1: "MOBILE",
     word2: "APPS",
     desc: "Aplikasi lintas platform dengan Flutter yang tampil tajam dan berjalan cepat di Android maupun iOS.",
-    leftPercent: "md:left-[53%] lg:left-[54.5%]",
-    tilt: -5,
+    leftPercent: "md:left-[52%] lg:left-[53%] xl:left-[54%]",
+    tilt: -4,
     iconType: "mobile",
   },
   {
@@ -59,8 +59,8 @@ const serviceItems: ServiceItem[] = [
     word1: "VISION",
     word2: "& AI",
     desc: "Integrasi model YOLOv8 & Groq AI untuk deteksi objek kamera real-time dan automasi cerdas.",
-    leftPercent: "md:left-[75%] lg:left-[76.5%]",
-    tilt: -5,
+    leftPercent: "md:left-[66%] lg:left-[70%] xl:left-[73%]",
+    tilt: -4,
     iconType: "ai",
   },
   {
@@ -68,8 +68,8 @@ const serviceItems: ServiceItem[] = [
     word1: "IOT &",
     word2: "HARDWARE",
     desc: "Menghubungkan kode dengan dunia fisik lewat Raspberry Pi, ESP32, sensor RFID, dan perangkat pintar.",
-    leftPercent: "md:left-[47%] lg:left-[47.0%]",
-    tilt: -5,
+    leftPercent: "md:left-[48%] lg:left-[47%]",
+    tilt: -4,
     iconType: "iot",
   },
   {
@@ -77,8 +77,8 @@ const serviceItems: ServiceItem[] = [
     word1: "CLOUD &",
     word2: "DEVOPS",
     desc: "Setup deployment yang stabil di Linux Lubuntu, Railway, Cloudflare, dan Vercel beserta optimasi MySQL.",
-    leftPercent: "md:left-[27%] lg:left-[26.0%]",
-    tilt: -5,
+    leftPercent: "md:left-[34%] lg:left-[30%] xl:left-[27%]",
+    tilt: -4,
     iconType: "database",
   },
   {
@@ -86,20 +86,19 @@ const serviceItems: ServiceItem[] = [
     word1: "SYSTEM",
     word2: "ARCHITECTURE",
     desc: "Menjaga seluruh bagian sistem bergerak selaras, dari rancangan database hingga detail interaksi terkecil.",
-    leftPercent: "md:left-[22%] lg:left-[20.5%]",
-    tilt: -5,
+    leftPercent: "md:left-[32%] lg:left-[27%] xl:left-[23%]",
+    tilt: -4,
     iconType: "architecture",
   },
 ];
 
-// ─── Looping Animated 3D/Isometric Developer Icons (Like Two26 Lottie SVGs) ──
+// ─── Looping Animated 3D/Isometric Developer Icons ──
 function AnimatedDevIcon({ type }: { type: ServiceItem["iconType"] }) {
   switch (type) {
     case "backend":
       return (
-        <svg viewBox="0 0 88 88" className="w-20 h-20 overflow-visible">
+        <svg viewBox="0 0 88 88" className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 overflow-visible">
           <g>
-            {/* 3D Isometric Cube Server */}
             <polygon
               points="44,10 78,26 44,42 10,26"
               fill="#fde68a"
@@ -130,8 +129,7 @@ function AnimatedDevIcon({ type }: { type: ServiceItem["iconType"] }) {
       );
     case "frontend":
       return (
-        <svg viewBox="0 0 88 88" className="w-20 h-20 overflow-visible">
-          {/* 3D Browser Window + Animated Cursor */}
+        <svg viewBox="0 0 88 88" className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 overflow-visible">
           <rect x="14" y="20" width="64" height="48" rx="9" fill="#1c1917" />
           <rect x="8" y="14" width="64" height="48" rx="9" fill="#fffbeb" stroke="#1c1917" strokeWidth="3" />
           <line x1="8" y1="26" x2="72" y2="26" stroke="#1c1917" strokeWidth="3" />
@@ -158,104 +156,125 @@ function AnimatedDevIcon({ type }: { type: ServiceItem["iconType"] }) {
       );
     case "mobile":
       return (
-        <svg viewBox="0 0 88 88" className="w-20 h-20 overflow-visible">
-          <g>
-            <rect x="28" y="12" width="40" height="66" rx="9" fill="#1c1917" transform="rotate(-7 48 45)" />
-            <rect
-              x="22"
-              y="8"
-              width="40"
-              height="66"
-              rx="9"
-              fill="#fbbf24"
-              stroke="#1c1917"
-              strokeWidth="3"
-              transform="rotate(-7 42 41)"
-            />
-            <rect
-              x="27"
-              y="16"
-              width="30"
-              height="48"
-              rx="5"
-              fill="#ffffff"
-              stroke="#1c1917"
-              strokeWidth="2.5"
-              transform="rotate(-7 42 41)"
-            />
-            <circle cx="42" cy="40" r="8" fill="#f59e0b" stroke="#1c1917" strokeWidth="2.5" />
-          </g>
+        <svg viewBox="0 0 88 88" className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 overflow-visible">
+          <rect
+            x="24"
+            y="12"
+            width="40"
+            height="64"
+            rx="10"
+            fill="#1c1917"
+            transform="rotate(-6 44 44)"
+          />
+          <rect
+            x="22"
+            y="10"
+            width="40"
+            height="64"
+            rx="10"
+            fill="#f59e0b"
+            stroke="#1c1917"
+            strokeWidth="3"
+            transform="rotate(-6 44 44)"
+          />
+          <rect
+            x="26"
+            y="18"
+            width="32"
+            height="46"
+            rx="5"
+            fill="#1c1917"
+            transform="rotate(-6 44 44)"
+          />
+          <path
+            d="M 32 28 L 44 40 L 37 47 L 33 43"
+            fill="#38bdf8"
+            transform="rotate(-6 44 44)"
+          />
+          <path
+            d="M 44 40 L 51 33 L 44 26"
+            fill="#0284c7"
+            transform="rotate(-6 44 44)"
+          />
+          <circle cx="44" cy="68" r="2.5" fill="#fde68a" transform="rotate(-6 44 44)" />
         </svg>
       );
     case "ai":
       return (
-        <svg viewBox="0 0 88 88" className="w-20 h-20 overflow-visible">
-          <rect x="16" y="18" width="60" height="52" rx="11" fill="#1c1917" />
-          <rect x="10" y="12" width="60" height="52" rx="11" fill="#fef3c7" stroke="#1c1917" strokeWidth="3" />
-          <path
-            d="M 20 26 L 20 20 L 26 20 M 54 20 L 60 20 L 60 26 M 20 50 L 20 56 L 26 56 M 54 56 L 60 56 L 60 50"
-            stroke="#f59e0b"
-            strokeWidth="3"
-            strokeLinecap="round"
-            fill="none"
-          />
-          <circle
-            cx="40"
-            cy="38"
-            r="12"
-            fill="#f59e0b"
+        <svg viewBox="0 0 88 88" className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 overflow-visible">
+          <polygon
+            points="44,8 76,26 76,62 44,80 12,62 12,26"
+            fill="#fef3c7"
             stroke="#1c1917"
             strokeWidth="3"
+            strokeLinejoin="round"
           />
-          <circle cx="40" cy="38" r="5" fill="#1c1917" />
-          <circle cx="43" cy="35" r="2" fill="#ffffff" />
+          <circle cx="44" cy="44" r="14" fill="#1c1917" />
+          <circle cx="44" cy="44" r="8" fill="#f59e0b" />
+          <circle cx="41" cy="41" r="3" fill="#ffffff" />
+          <path d="M 30 30 L 22 22 M 58 30 L 66 22 M 30 58 L 22 66 M 58 58 L 66 66" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" />
         </svg>
       );
     case "iot":
       return (
-        <svg viewBox="0 0 88 88" className="w-20 h-20 overflow-visible">
-          <rect x="22" y="22" width="48" height="48" rx="9" fill="#1c1917" />
-          <rect x="16" y="16" width="48" height="48" rx="9" fill="#f59e0b" stroke="#1c1917" strokeWidth="3" />
-          <rect x="27" y="27" width="26" height="26" rx="4" fill="#1c1917" stroke="#ffffff" strokeWidth="2" />
-          <path
-            d="M 28 8 V 16 M 40 8 V 16 M 52 8 V 16 M 28 64 V 72 M 40 64 V 72 M 52 64 V 72 M 8 28 H 16 M 8 40 H 16 M 8 52 H 16 M 64 28 H 72 M 64 40 H 72 M 64 52 H 72"
-            stroke="#1c1917"
-            strokeWidth="3"
-            strokeLinecap="round"
-          />
-          <circle cx="40" cy="40" r="4.5" fill="#34d399" />
+        <svg viewBox="0 0 88 88" className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 overflow-visible">
+          <g>
+            <rect x="20" y="24" width="48" height="40" rx="8" fill="#047857" stroke="#1c1917" strokeWidth="3" />
+            <rect x="32" y="32" width="24" height="24" rx="4" fill="#1c1917" />
+            <circle cx="44" cy="44" r="4" fill="#34d399" />
+            <line x1="28" y1="16" x2="28" y2="24" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" />
+            <line x1="44" y1="14" x2="44" y2="24" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" />
+            <line x1="60" y1="16" x2="60" y2="24" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" />
+            <line x1="28" y1="64" x2="28" y2="72" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" />
+            <line x1="44" y1="64" x2="44" y2="74" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" />
+            <line x1="60" y1="64" x2="60" y2="72" stroke="#f59e0b" strokeWidth="3" strokeLinecap="round" />
+          </g>
         </svg>
       );
     case "database":
       return (
-        <svg viewBox="0 0 88 88" className="w-20 h-20 overflow-visible">
+        <svg viewBox="0 0 88 88" className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 overflow-visible">
           <g>
             <path
-              d="M 18 24 C 18 15, 70 15, 70 24 V 66 C 70 75, 18 75, 18 66 Z"
+              d="M 22 24 C 22 17 66 17 66 24 L 66 64 C 66 71 22 71 22 64 Z"
               fill="#f59e0b"
               stroke="#1c1917"
               strokeWidth="3"
             />
-            <ellipse cx="44" cy="24" rx="26" ry="9" fill="#fde68a" stroke="#1c1917" strokeWidth="3" />
-            <path d="M 18 39 C 18 48, 70 48, 70 39" fill="none" stroke="#1c1917" strokeWidth="3" />
-            <path d="M 18 53 C 18 62, 70 62, 70 53" fill="none" stroke="#1c1917" strokeWidth="3" />
+            <ellipse cx="44" cy="24" rx="22" ry="7" fill="#fde68a" stroke="#1c1917" strokeWidth="3" />
+            <path d="M 22 37 C 22 44 66 44 66 37" fill="none" stroke="#1c1917" strokeWidth="3" />
+            <path d="M 22 51 C 22 58 66 58 66 51" fill="none" stroke="#1c1917" strokeWidth="3" />
+            <circle cx="56" cy="58" r="2.5" fill="#1c1917" />
           </g>
         </svg>
       );
     case "architecture":
       return (
-        <svg viewBox="0 0 88 88" className="w-20 h-20 overflow-visible">
-          <g className="origin-center">
-            <circle cx="44" cy="44" r="24" fill="#fde68a" stroke="#1c1917" strokeWidth="3" strokeDasharray="8 6" />
+        <svg viewBox="0 0 88 88" className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 xl:w-20 xl:h-20 overflow-visible">
+          <g>
+            <polygon
+              points="44,12 74,30 44,48 14,30"
+              fill="#fbbf24"
+              stroke="#1c1917"
+              strokeWidth="3"
+              strokeLinejoin="round"
+            />
+            <polygon
+              points="44,28 74,46 44,64 14,46"
+              fill="#f59e0b"
+              stroke="#1c1917"
+              strokeWidth="3"
+              strokeLinejoin="round"
+            />
+            <polygon
+              points="44,44 74,62 44,80 14,62"
+              fill="#1c1917"
+              stroke="#1c1917"
+              strokeWidth="3"
+              strokeLinejoin="round"
+            />
+            <line x1="44" y1="12" x2="44" y2="76" stroke="#ffffff" strokeWidth="2.5" strokeDasharray="3 3" />
           </g>
-          <polygon
-            points="44,18 68,58 20,58"
-            fill="#f59e0b"
-            stroke="#1c1917"
-            strokeWidth="3"
-            strokeLinejoin="round"
-          />
-          <circle cx="44" cy="46" r="6" fill="#1c1917" />
         </svg>
       );
   }
@@ -271,8 +290,7 @@ export default function Services() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. Scrub Two26 Studio's exact winding S-Curve path IN LOCKSTEP with viewport center
-      // (Tidak bergerak duluan sebelum layar benar-benar men-scroll masuk ke area garis!)
+      // 1. Scrub Two26 Studio winding S-Curve path in lockstep with scroll
       const path = activePathRef.current;
       if (path && pathContainerRef.current) {
         const len = path.getTotalLength();
@@ -286,16 +304,19 @@ export default function Services() {
           ease: "none",
           scrollTrigger: {
             trigger: pathContainerRef.current,
-            start: "top 46%", // Baru mulai jalan ketika ujung kanan atas masuk ke tengah layar!
+            start: "top 46%",
             end: "bottom 52%",
             scrub: 0.45,
           },
         });
       }
 
-      // 2. Two26 `.service-block` Animation:
-      // `.service-svg` expands from width 0 -> 92px -> 88px with scale overshoot (pushing the 2 words apart!)
-      // `.service-block-para-wrapper` pops in with scale overshoot & rotate(-5deg)
+      // 2. Responsive icon expansion & popCard entrance
+      const isMobile = window.innerWidth < 768;
+      const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+      const isLaptop = window.innerWidth >= 1024 && window.innerWidth < 1280;
+      const targetIconWidth = isMobile ? 46 : isTablet ? 56 : isLaptop ? 66 : 80;
+
       serviceItems.forEach((item, idx) => {
         const row = rowRefs.current[idx];
         const iconBox = iconBoxesRef.current[idx];
@@ -321,14 +342,14 @@ export default function Services() {
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: row,
-            start: "top 58%", // Tepat saat ujung garis menyentuh baris service ini
+            start: "top 58%",
             toggleActions: "play none none reverse",
           },
         });
 
         if (iconBox) {
           tl.to(iconBox, {
-            width: 88,
+            width: targetIconWidth,
             opacity: 1,
             scale: 1,
             duration: 0.65,
@@ -361,25 +382,25 @@ export default function Services() {
       ref={sectionRef}
       className="relative py-28 bg-stone-50 border-t border-stone-200/80 overflow-hidden"
     >
-      {/* Section Header ("OUR SERVICES" + "THIS IS MY THING") */}
+      {/* Section Header */}
       <div className="max-w-6xl mx-auto px-4 text-center mb-16 relative z-20">
         <div className="inline-flex items-center gap-2 font-mono text-xs tracking-widest uppercase text-amber-600 mb-3">
           <span>✦</span>
           <span>My Services &amp; Expertise</span>
         </div>
-        <h2 className="font-display text-5xl sm:text-6xl md:text-7xl font-bold text-stone-900 uppercase tracking-tight leading-[0.95]">
+        <h2 className="font-display text-4xl sm:text-6xl md:text-7xl font-bold text-stone-900 uppercase tracking-tight leading-[0.95]">
           This Is
           <br />
           <span className="text-amber-500">My Thing</span>
         </h2>
       </div>
 
-      {/* Full-Width Winding Path Container (Flush Edge-to-Edge From Right Corner to Left Corner!) */}
+      {/* Full-Width Winding Path Container (Flush Edge-to-Edge) */}
       <div
         ref={pathContainerRef}
-        className="relative w-full min-h-[1680px] md:min-h-[1950px] overflow-hidden"
+        className="relative w-full min-h-[1600px] md:min-h-[1950px] overflow-hidden"
       >
-        {/* `.blockhole-start`: Flush at Top-Right Corner */}
+        {/* Top-Right Start Portal */}
         <div
           aria-hidden="true"
           className="hidden md:block absolute top-0 right-0 z-10 w-9 h-11 translate-x-1"
@@ -398,14 +419,13 @@ export default function Services() {
           </svg>
         </div>
 
-        {/* `.services-path-svg` & `.services-path-svg-dark`: Exact Two26 Studio S-Curve with Loops */}
+        {/* Exact Two26 Studio S-Curve SVG */}
         <svg
           viewBox="0 0 1616 2187"
           preserveAspectRatio="none"
           className="hidden md:block absolute inset-0 w-full h-full pointer-events-none z-0"
           fill="none"
         >
-          {/* Base Pale Track (`.services-path-svg`) */}
           <path
             d={TWO26_EXACT_PATH}
             stroke="#f5ebe6"
@@ -413,8 +433,6 @@ export default function Services() {
             strokeLinecap="round"
             strokeLinejoin="round"
           />
-
-          {/* Scroll-Scrubbed Active Amber Track (`.services-path-svg-dark`) */}
           <path
             ref={activePathRef}
             d={TWO26_EXACT_PATH}
@@ -425,7 +443,7 @@ export default function Services() {
           />
         </svg>
 
-        {/* `.blackhole-end`: Flush at Bottom-Left Corner */}
+        {/* Bottom-Left End Portal */}
         <div
           aria-hidden="true"
           className="hidden md:block absolute bottom-0 left-0 z-10 w-9 h-11 -translate-x-1"
@@ -444,50 +462,50 @@ export default function Services() {
           </svg>
         </div>
 
-        {/* 7 Staggered Service Rows (`.services-layers` > `.service-layer` > `.service-block`) */}
-        <div className="relative z-20 flex flex-col justify-between min-h-[1680px] md:min-h-[1950px] py-20 px-4 md:px-0">
+        {/* 7 Staggered Service Rows with Fluid Clamp Typography (Guaranteed 0 Viewport Clipping) */}
+        <div className="relative z-20 flex flex-col justify-between min-h-[1600px] md:min-h-[1950px] py-16 md:py-20 px-3 md:px-0">
           {serviceItems.map((item, idx) => (
             <div
               key={item.id}
               ref={(el) => {
                 rowRefs.current[idx] = el;
               }}
-              className="relative w-full flex items-center min-h-[140px]"
+              className="relative w-full flex items-center justify-center min-h-[140px]"
             >
               <div
-                className={`relative flex flex-col items-center mx-auto md:mx-0 md:absolute ${item.leftPercent} md:-translate-x-1/2`}
+                className={`relative flex flex-col items-center mx-auto md:mx-0 md:absolute ${item.leftPercent} md:-translate-x-1/2 max-w-[94vw] md:max-w-none`}
               >
-                {/* Two Uppercase Words Flanking the Center Icon (Dead-center on the line!) */}
-                <div className="relative flex items-center justify-center">
-                  <span className="font-display text-3xl sm:text-5xl lg:text-6xl font-bold text-amber-500 uppercase tracking-tight leading-none drop-shadow-[0_2px_0_#1c1917] whitespace-nowrap text-right pr-1 sm:pr-2">
+                {/* Two Uppercase Words Flanking Center Icon */}
+                <div className="relative flex items-center justify-center max-w-full">
+                  <span className="font-display text-[clamp(1.15rem,2.15vw,2.95rem)] font-bold text-amber-500 uppercase tracking-tight leading-none drop-shadow-[0_2px_0_#1c1917] whitespace-nowrap text-right pr-1 sm:pr-2">
                     {item.word1}
                   </span>
 
-                  {/* `.service-svg`: Expands from width 0 -> 88px directly centered on the path line! */}
+                  {/* `.service-svg`: Expands responsively on the line */}
                   <div
                     ref={(el) => {
                       iconBoxesRef.current[idx] = el;
                     }}
-                    className="inline-flex items-center justify-center overflow-hidden shrink-0 mx-0.5"
+                    className="inline-flex items-center justify-center overflow-hidden shrink-0 mx-0.5 sm:mx-1"
                     style={{ width: 0, opacity: 0 }}
                   >
                     <AnimatedDevIcon type={item.iconType} />
                   </div>
 
-                  <span className="font-display text-3xl sm:text-5xl lg:text-6xl font-bold text-stone-900 uppercase tracking-tight leading-none whitespace-nowrap text-left pl-1 sm:pl-2">
+                  <span className="font-display text-[clamp(1.15rem,2.15vw,2.95rem)] font-bold text-stone-900 uppercase tracking-tight leading-none whitespace-nowrap text-left pl-1 sm:pl-2">
                     {item.word2}
                   </span>
                 </div>
 
-                {/* `.service-block-para-wrapper`: Tilted Cream/Amber Pop-Up Pill Card Below */}
+                {/* Wrapped, Responsive Speech Bubble (Never Overflows Viewport) */}
                 <div
                   ref={(el) => {
                     popCardsRef.current[idx] = el;
                   }}
-                  className="mt-3 max-w-xs sm:max-w-sm rounded-2xl bg-amber-50/95 backdrop-blur-xs border-2 border-amber-500 px-5 py-3.5 shadow-lg text-center"
+                  className="mt-2.5 max-w-[240px] sm:max-w-[280px] md:max-w-[310px] rounded-2xl bg-amber-50/95 backdrop-blur-xs border-2 border-amber-500 px-4 py-2.5 sm:px-5 sm:py-3 shadow-md text-center"
                   style={{ opacity: 0 }}
                 >
-                  <p className="text-amber-950 text-xs sm:text-sm font-medium leading-snug">
+                  <p className="text-amber-950 text-[11px] sm:text-xs font-medium leading-snug">
                     {item.desc}
                   </p>
                 </div>

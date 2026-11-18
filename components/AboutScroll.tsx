@@ -239,7 +239,7 @@ export default function AboutScroll() {
           {/* Pill 2: Muncul menimpa baris tengah setelah teksnya sudah berwarna hitam */}
           <div
             ref={pill2Ref}
-            className="pointer-events-none hidden md:inline-flex items-center gap-2 px-4 py-2 rounded-full bg-stone-900 text-amber-400 font-mono text-xs font-bold uppercase tracking-wider shadow-2xl border-2 border-amber-400 absolute top-[44%] right-[10%] lg:right-[15%] z-20"
+            className="pointer-events-none hidden md:inline-flex items-center gap-2 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-stone-900 text-amber-400 font-mono text-[11px] sm:text-xs font-bold uppercase tracking-wider shadow-2xl border-2 border-amber-400 absolute top-[44%] right-[4%] lg:right-[10%] xl:right-[15%] z-20"
           >
             <svg
               viewBox="0 0 24 24"

@@ -11,11 +11,16 @@ interface InteractiveWaveDividerProps {
   className?: string;
 }
 
+/**
+ * Interactive Wave Divider with Spring Physics
+ * Directly replicating the natural, subtle, realistic wave divider from createdbywilliam.co.za
+ * Gentle amplitude, soft water-tension spring physics, responsive to direct cursor hover.
+ */
 export default function InteractiveWaveDivider({
   fillColor = "#f59e0b",
   topColor = "#fafaf9",
   strokeColor = "rgba(28, 25, 23, 0.12)",
-  height = 72,
+  height = 68,
   flip = false,
   className = "",
 }: InteractiveWaveDividerProps) {
@@ -34,7 +39,8 @@ export default function InteractiveWaveDivider({
 
     svg.setAttribute("viewBox", `0 0 ${W} ${F}`);
 
-    // Discretization parameters (exact createdbywilliam.co.za model)
+    // Discretization matching createdbywilliam.co.za:
+    // N between 24 and 72 nodes spaced ~22px
     let N = Math.round(Math.min(72, Math.max(24, W / 22)));
     let S = W / N;
 
@@ -42,9 +48,10 @@ export default function InteractiveWaveDivider({
     let v = new Float32Array(N + 1);
     let was = new Float32Array(N + 1);
 
-    const base = F * 0.44;
-    const amp = Math.min(10, F * 0.12);
-    const len = W / (W < 768 ? 1.15 : 1.85);
+    // Subtle natural rest curve (realistic, not excessive)
+    let base = F * 0.46;
+    let amp = Math.min(11, F * 0.15);
+    let len = W / (W < 760 ? 1.15 : 1.8);
 
     const rest = (x: number) => base + Math.sin((x / len) * Math.PI * 2 + 0.8) * amp;
 
@@ -57,32 +64,34 @@ export default function InteractiveWaveDivider({
       u = new Float32Array(N + 1);
       v = new Float32Array(N + 1);
       was = new Float32Array(N + 1);
+      base = F * 0.46;
+      amp = Math.min(11, F * 0.15);
+      len = W / (W < 760 ? 1.15 : 1.8);
       draw(1);
     };
 
     window.addEventListener("resize", resize, { passive: true });
 
-    // Pointer velocity tracking
-    const mouse = {
+    // Pointer velocity tracking restricted strictly to container bounds
+    const bat = {
       x: -9999,
       y: -9999,
       vx: 0,
       vy: 0,
-      lastX: -9999,
-      lastY: -9999,
-      lastTime: performance.now(),
+      t: performance.now(),
     };
 
-    let awake = true;
-    let isIntersecting = true;
+    let awake = false;
+    let isIntersecting = false;
     let rafId = 0;
 
+    // Gentle poke with gaussian spread around impulse point
     const poke = (x: number, imp: number) => {
       const f = x / S;
-      const minI = Math.max(0, Math.floor(f - 6));
-      const maxI = Math.min(N, Math.ceil(f + 6));
+      const minI = Math.max(0, Math.floor(f - 5));
+      const maxI = Math.min(N, Math.ceil(f + 5));
       for (let i = minI; i <= maxI; i++) {
-        v[i] += imp * Math.exp(-((i - f) ** 2) / 4.2);
+        v[i] += imp * Math.exp(-((i - f) ** 2) / 3.2);
       }
       awake = true;
       if (!rafId && isIntersecting) {
@@ -91,50 +100,48 @@ export default function InteractiveWaveDivider({
       }
     };
 
+    // Hover interaction: ONLY triggers when cursor passes directly over the wave divider
     const onPointerMove = (e: PointerEvent) => {
       const rect = container.getBoundingClientRect();
       const now = performance.now();
-      const dt = Math.max(8, now - mouse.lastTime) / 1000;
-      mouse.lastTime = now;
+      const dt = Math.max(0.005, (now - bat.t) / 1000);
 
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      if (mouse.lastX !== -9999) {
-        mouse.vx = (x - mouse.lastX) / dt;
-        mouse.vy = (y - mouse.lastY) / dt;
+      if (bat.x !== -9999) {
+        bat.vx = (x - bat.x) / dt;
+        bat.vy = (y - bat.y) / dt;
       }
-      mouse.lastX = x;
-      mouse.lastY = y;
+      bat.x = x;
+      bat.y = y;
+      bat.t = now;
 
-      // Active zone check (within 32px of wave surface or inside height)
-      if (x >= 0 && x <= W && y >= -32 && y <= F + 32) {
-        const vyClamped = Math.max(-550, Math.min(550, mouse.vy));
-        const vxClamped = Math.min(650, Math.abs(mouse.vx));
-        const imp = vyClamped * 0.14 + vxClamped * 0.06;
-        if (Math.abs(imp) > 0.3) {
-          poke(x, imp);
+      // Realistic trigger: only when cursor is close to the actual wave surface
+      if (x >= 0 && x <= W) {
+        const surfY = rest(x);
+        const dist = Math.abs(y - surfY);
+        if (dist < 28) {
+          const vyClamped = Math.max(-360, Math.min(360, bat.vy));
+          const vxClamped = Math.min(420, Math.abs(bat.vx));
+          const imp = vyClamped * 0.11 + vxClamped * 0.045;
+          if (Math.abs(imp) > 0.4) {
+            poke(x, imp);
+          }
         }
       }
     };
 
-    window.addEventListener("pointermove", onPointerMove, { passive: true });
-
-    // Scroll ripple trigger
-    let lastScrollY = window.scrollY;
-    const onScroll = () => {
-      const currentScrollY = window.scrollY;
-      const dy = currentScrollY - lastScrollY;
-      lastScrollY = currentScrollY;
-      const k = Math.max(-60, Math.min(60, dy * 1.5));
-      if (Math.abs(k) > 1.2) {
-        const center = W * 0.5;
-        poke(center, k * 0.35);
-      }
+    const onPointerLeave = () => {
+      bat.x = -9999;
+      bat.y = -9999;
     };
-    window.addEventListener("scroll", onScroll, { passive: true });
 
-    // Quadratic Bézier Spline draw
+    container.addEventListener("pointermove", onPointerMove, { passive: true });
+    container.addEventListener("pointerleave", onPointerLeave, { passive: true });
+
+    // Quadratic Bézier Spline draw matching createdbywilliam.co.za
+    let lastD = "";
     const draw = (interp: number) => {
       if (!path) return;
       const getY = (i: number) => {
@@ -152,14 +159,17 @@ export default function InteractiveWaveDivider({
       const bottomY = flip ? -2 : F + 2;
       d += `L ${(W + 2).toFixed(1)} ${endY} V ${bottomY} H -2 Z`;
 
-      path.setAttribute("d", d);
+      if (d !== lastD) {
+        path.setAttribute("d", d);
+        lastD = d;
+      }
     };
 
-    // Physics step (Ultra-soft, silky fluid feel matching createdbywilliam.co.za)
+    // Physics step with William Sham's exact constants (FK = 26, FD = 3.4)
     const DT = 1 / 120;
-    const FK = 22;
-    const FD = 3.8;
-    const cap = F * 0.45;
+    const FK = 26;
+    const FD = 3.4;
+    const cap = F * 0.38;
 
     let prevTime = performance.now();
     let acc = 0;
@@ -205,7 +215,7 @@ export default function InteractiveWaveDivider({
         if (absV > maxV) maxV = absV;
       }
 
-      if (maxU < 0.035 && maxV < 0.6) {
+      if (maxU < 0.03 && maxV < 0.5) {
         u.fill(0);
         v.fill(0);
         was.fill(0);
@@ -218,19 +228,26 @@ export default function InteractiveWaveDivider({
       rafId = requestAnimationFrame(loop);
     };
 
-    // Pause physics when out of viewport
+    // Pause physics when out of viewport; perform one gentle welcoming wave when scrolled into view
+    let hasWokenOnce = false;
     const observer = new IntersectionObserver(
       ([entry]) => {
         isIntersecting = entry.isIntersecting;
-        if (isIntersecting && awake && !rafId) {
-          prevTime = performance.now();
-          rafId = requestAnimationFrame(loop);
+        if (isIntersecting) {
+          if (!hasWokenOnce) {
+            hasWokenOnce = true;
+            poke(W * 0.5, 9);
+          }
+          if (awake && !rafId) {
+            prevTime = performance.now();
+            rafId = requestAnimationFrame(loop);
+          }
         } else if (!isIntersecting && rafId) {
           cancelAnimationFrame(rafId);
           rafId = 0;
         }
       },
-      { threshold: 0.05 }
+      { threshold: 0.1 }
     );
     observer.observe(container);
 
@@ -241,8 +258,8 @@ export default function InteractiveWaveDivider({
       observer.disconnect();
       if (rafId) cancelAnimationFrame(rafId);
       window.removeEventListener("resize", resize);
-      window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("scroll", onScroll);
+      container.removeEventListener("pointermove", onPointerMove);
+      container.removeEventListener("pointerleave", onPointerLeave);
     };
   }, [height, flip]);
 
@@ -256,10 +273,11 @@ export default function InteractiveWaveDivider({
       <svg
         ref={svgRef}
         preserveAspectRatio="none"
-        className="absolute inset-0 w-full h-full block overflow-visible"
+        className="absolute inset-0 w-full h-full block overflow-visible pointer-events-none"
       >
-        {/* Background fills the entire top area matching the section above, eliminating any white gap */}
+        {/* Background fills top area matching section above (zero gaps) */}
         <rect width="100%" height="100%" fill={topColor} />
+        {/* Organic wave path with crisp separating stroke */}
         <path
           ref={pathRef}
           fill={fillColor}

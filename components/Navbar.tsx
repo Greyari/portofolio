@@ -265,19 +265,19 @@ export default function Navbar() {
           {/* Studio Brand Identity with Fixed-Width Typewriter to Protect Navbar Links */}
           <a
             href="#overview"
-            className="flex items-center gap-2 group py-1 shrink-0 w-[215px] sm:w-[245px]"
+            className="flex items-center gap-1.5 sm:gap-2 group py-1 shrink-0 w-[185px] sm:w-[245px]"
             onClick={(e) => {
               e.preventDefault();
               scrollToHref("#overview");
             }}
           >
-            <span className="text-stone-900 font-display font-bold text-base tracking-tight group-hover:text-amber-600 transition-colors duration-200 shrink-0">
+            <span className="text-stone-900 font-display font-bold text-sm sm:text-base tracking-tight group-hover:text-amber-600 transition-colors duration-200 shrink-0">
               Grey Ari
             </span>
             <span className="text-stone-300 font-mono text-xs shrink-0">
               /
             </span>
-            <div className="flex items-center font-mono text-[10px] sm:text-[11px] font-semibold tracking-wider uppercase text-amber-800 bg-amber-50/90 border border-amber-300/80 px-2 py-0.5 rounded-full shadow-2xs whitespace-nowrap min-w-0 max-w-[125px] sm:max-w-[145px]">
+            <div className="flex items-center font-mono text-[9px] sm:text-[11px] font-semibold tracking-wider uppercase text-amber-800 bg-amber-50/90 border border-amber-300/80 px-1.5 sm:px-2 py-0.5 rounded-full shadow-2xs whitespace-nowrap min-w-0 max-w-[105px] sm:max-w-[145px]">
               <span className="truncate">{typewriterText}</span>
               <span className="inline-block w-[1.5px] h-3 bg-amber-600 ml-0.5 animate-pulse shrink-0" />
             </div>

@@ -91,7 +91,7 @@ export default function Hero() {
           </div>
 
           {/* Large Boutique Heading */}
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[76px] font-bold text-stone-900 leading-[0.96] tracking-tight mb-5 opacity-0">
+          <h1 className="font-display text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-bold text-stone-900 leading-[0.96] tracking-tight mb-5 opacity-0">
             Grey Ari
             <br />
             <span className="text-stone-400 font-normal">Daniel S.</span>
