@@ -3,93 +3,120 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
+/**
+ * Editorial Boutique Splash Screen & Preloader
+ * Clean, high-end studio aesthetic:
+ * - Architectural metadata header
+ * - Mask-reveal editorial typography ("GREY ARI.")
+ * - Precision monospace percentage counter (00% -> 100%) with hairline progress track
+ * - Dual-layer luxury curtain reveal (Stone-950 -> Amber slipstream -> Hero reveal)
+ */
 export default function SplashScreen() {
   const [visible, setVisible] = useState(true);
-  const loaderRef = useRef<HTMLDivElement>(null);
-  const sigPath1Ref = useRef<SVGPathElement>(null);
-  const sigPath2Ref = useRef<SVGPathElement>(null);
-  const badgeRef = useRef<HTMLDivElement>(null);
-  const curtainStoneRef = useRef<SVGPathElement>(null);
-  const curtainAmberRef = useRef<SVGPathElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const stoneCurtainRef = useRef<HTMLDivElement>(null);
+  const amberCurtainRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const title1Ref = useRef<HTMLSpanElement>(null);
+  const title2Ref = useRef<HTMLSpanElement>(null);
+  const counterRef = useRef<HTMLSpanElement>(null);
+  const progressBarRef = useRef<HTMLDivElement>(null);
+  const statusRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
-    const sig1 = sigPath1Ref.current;
-    const sig2 = sigPath2Ref.current;
-    const curtainStone = curtainStoneRef.current;
-    const curtainAmber = curtainAmberRef.current;
-    const badge = badgeRef.current;
+    // Lock scroll during splash screen presentation
+    document.body.style.overflow = "hidden";
 
-    if (!sig1 || !sig2 || !curtainStone || !curtainAmber) return;
-
-    const len1 = sig1.getTotalLength();
-    const len2 = sig2.getTotalLength();
-    const curtainLen1 = curtainStone.getTotalLength();
-    const curtainLen2 = curtainAmber.getTotalLength();
-
-    gsap.set(sig1, { strokeDasharray: len1, strokeDashoffset: len1 });
-    gsap.set(sig2, { strokeDasharray: len2, strokeDashoffset: len2 });
-    gsap.set(curtainStone, { strokeDasharray: curtainLen1, strokeDashoffset: 0 });
-    gsap.set(curtainAmber, { strokeDasharray: curtainLen2, strokeDashoffset: 0 });
-
+    const countObj = { val: 0 };
     const tl = gsap.timeline({
       onComplete: () => {
+        document.body.style.overflow = "";
         setVisible(false);
       },
     });
 
-    // 1. Draw center signature cursive stroke (Two26 style)
-    tl.to(sig1, {
-      strokeDashoffset: 0,
-      duration: 1.05,
-      ease: "power2.inOut",
+    // Initial states: title words hidden beneath overflow mask
+    gsap.set([title1Ref.current, title2Ref.current], {
+      yPercent: 120,
+      opacity: 0,
+    });
+    gsap.set(progressBarRef.current, {
+      scaleX: 0,
+      transformOrigin: "left center",
+    });
+
+    // 1. Entrance: Editorial title smoothly slides up through the mask
+    tl.to([title1Ref.current, title2Ref.current], {
+      yPercent: 0,
+      opacity: 1,
+      duration: 0.65,
+      stagger: 0.08,
+      ease: "power3.out",
+      delay: 0.1,
     })
+      // 2. Precision Counter & Progress Bar: 0% -> 100% count-up
       .to(
-        sig2,
+        progressBarRef.current,
         {
-          strokeDashoffset: 0,
-          duration: 0.7,
-          ease: "power2.out",
+          scaleX: 1,
+          duration: 0.95,
+          ease: "power2.inOut",
         },
-        "-=0.45"
+        "-=0.4"
       )
-      .fromTo(
-        badge,
-        { opacity: 0, y: 12, scale: 0.92 },
-        { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.7)" },
-        "-=0.5"
-      )
-      // 2. Fade out center logo & badge before diagonal brush wipe
       .to(
-        [sig1, sig2, badge],
+        countObj,
         {
-          opacity: 0,
-          scale: 0.96,
-          duration: 0.3,
-          ease: "power2.in",
+          val: 100,
+          duration: 0.95,
+          ease: "power2.inOut",
+          onUpdate: () => {
+            if (counterRef.current) {
+              const num = Math.round(countObj.val);
+              counterRef.current.textContent = String(num).padStart(2, "0");
+            }
+          },
         },
-        "+=0.2"
+        "<"
       )
-      // 3. Two-tone diagonal mega-brush curtain wipe (Stone -> Amber -> Reveal Hero)
+      // Status update at 100%
+      .call(() => {
+        if (statusRef.current) {
+          statusRef.current.textContent = "SYSTEM READY";
+          statusRef.current.className = "text-amber-400 font-bold tracking-wider";
+        }
+      })
+      // Brief pause at 100% (120ms)
+      .to({}, { duration: 0.12 })
+      // 3. Graceful lift of center text
+      .to(contentRef.current, {
+        y: -28,
+        opacity: 0,
+        duration: 0.35,
+        ease: "power2.in",
+      })
+      // 4. Staggered Dual-Curtain Upward Sweep (Stone -> Amber slipstream -> Reveal Hero)
       .to(
-        curtainStone,
+        stoneCurtainRef.current,
         {
-          strokeDashoffset: -curtainLen1,
-          duration: 0.75,
-          ease: "power3.inOut",
+          yPercent: -100,
+          duration: 0.8,
+          ease: "power4.inOut",
         },
         "-=0.1"
       )
       .to(
-        curtainAmber,
+        amberCurtainRef.current,
         {
-          strokeDashoffset: curtainLen2,
+          yPercent: -100,
           duration: 0.8,
-          ease: "power3.inOut",
+          ease: "power4.inOut",
         },
-        "-=0.58"
+        "-=0.68"
       );
 
     return () => {
+      document.body.style.overflow = "";
       tl.kill();
     };
   }, []);
@@ -98,70 +125,80 @@ export default function SplashScreen() {
 
   return (
     <div
-      ref={loaderRef}
-      aria-hidden="true"
-      className="fixed inset-0 z-[99999] w-full h-[100dvh] flex items-center justify-center overflow-hidden pointer-events-auto select-none"
+      ref={containerRef}
+      className="fixed inset-0 z-[99999] pointer-events-none select-none overflow-hidden"
     >
-      {/* Background Two-Tone Diagonal Brush Curtain Wipe (Two26 Studio style) */}
-      <svg
-        viewBox="0 0 1500 1093"
-        preserveAspectRatio="xMidYMid slice"
-        className="absolute inset-0 w-full h-full object-cover z-[1]"
-        fill="none"
+      {/* Background Amber Curtain (Reveals as secondary trailing slipstream) */}
+      <div
+        ref={amberCurtainRef}
+        className="absolute inset-0 w-full h-full bg-amber-500 pointer-events-auto"
+      />
+
+      {/* Main Stone Obsidian Curtain */}
+      <div
+        ref={stoneCurtainRef}
+        className="absolute inset-0 w-full h-full bg-stone-950 text-white flex flex-col justify-between p-6 sm:p-10 md:p-14 pointer-events-auto"
       >
-        {/* Bottom-layer Amber Mega Brush */}
-        <path
-          ref={curtainAmberRef}
-          d="M1680 -120 C 1150 280, 620 650, -180 1220"
-          stroke="#f59e0b"
-          strokeWidth="3000"
-          strokeLinecap="round"
-        />
-        {/* Top-layer Warm Cream/Stone Mega Brush */}
-        <path
-          ref={curtainStoneRef}
-          d="M-180 -120 C 420 350, 980 720, 1680 1220"
-          stroke="#fafaf9"
-          strokeWidth="3000"
-          strokeLinecap="round"
-        />
-      </svg>
+        {/* Top Architectural Metadata */}
+        <div className="flex items-center justify-between font-mono text-[10px] sm:text-xs tracking-[0.2em] text-stone-400 uppercase">
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+            <span className="text-stone-200 font-semibold">Grey Ari Daniel</span>
+          </div>
+          <div className="hidden sm:block text-stone-500">
+            PORTFOLIO • 2026
+          </div>
+          <div className="text-stone-400">BATAM, ID • UTC+7</div>
+        </div>
 
-      {/* Center Continuous Hand-Drawn Cursive Signature ("Grey26" / Grey Ari loop) */}
-      <div className="relative z-[2] flex flex-col items-center justify-center px-6">
-        <svg
-          viewBox="0 0 920 360"
-          className="w-[310px] sm:w-[520px] md:w-[680px] h-auto overflow-visible"
-          fill="none"
-        >
-          {/* Continuous expressive hand-drawn signature loop */}
-          <path
-            ref={sigPath1Ref}
-            d="M 190 95 C 95 75, 55 165, 115 225 C 165 270, 245 230, 250 165 C 252 140, 235 280, 195 315 C 155 345, 115 310, 165 265 C 235 205, 305 155, 330 215 C 345 160, 385 155, 410 185 C 445 185, 485 155, 465 135 C 440 115, 405 165, 435 210 C 465 245, 525 210, 545 155 C 555 215, 595 225, 625 155 C 635 225, 610 315, 565 325 C 525 335, 515 285, 585 245 C 665 200, 745 145, 815 115"
-            stroke="#f59e0b"
-            strokeWidth="16"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {/* Secondary accent underline & dev bracket */}
-          <path
-            ref={sigPath2Ref}
-            d="M 240 285 C 390 255, 610 235, 835 245 M 785 85 L 845 115 L 795 160"
-            stroke="#1c1917"
-            strokeWidth="10"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-
-        {/* Boutique Studio Tag */}
+        {/* Center Editorial Title & Subtitle */}
         <div
-          ref={badgeRef}
-          className="mt-2 inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-stone-900 text-amber-400 font-mono text-xs tracking-widest uppercase shadow-lg opacity-0"
+          ref={contentRef}
+          className="my-auto text-center flex flex-col items-center px-4"
         >
-          <span className="w-2 h-2 rounded-full bg-amber-400 animate-ping" />
-          <span>Grey Ari • Full-Stack &amp; AI Studio</span>
+          <div className="overflow-hidden py-1">
+            <h1 className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold tracking-tight text-white uppercase leading-none">
+              <span ref={title1Ref} className="inline-block">
+                GREY ARI
+              </span>
+              <span className="text-amber-500">.</span>
+            </h1>
+          </div>
+
+          <div className="overflow-hidden mt-3 sm:mt-4">
+            <p
+              ref={title2Ref}
+              className="font-mono text-xs sm:text-sm tracking-[0.25em] sm:tracking-[0.35em] text-stone-400 uppercase font-medium"
+            >
+              Full-Stack &amp; System Architecture
+            </p>
+          </div>
+        </div>
+
+        {/* Bottom Progress & Metrics Bar */}
+        <div className="w-full max-w-xl mx-auto flex flex-col gap-3">
+          <div className="flex items-center justify-between font-mono text-xs sm:text-sm tracking-wider">
+            <span
+              ref={statusRef}
+              className="text-stone-400 transition-colors duration-200 text-[11px] sm:text-xs tracking-widest"
+            >
+              INITIALIZING...
+            </span>
+            <div className="flex items-baseline gap-0.5 text-amber-400 font-bold tabular-nums">
+              <span ref={counterRef} className="text-xl sm:text-2xl font-mono">
+                00
+              </span>
+              <span className="text-xs text-amber-500/80 font-mono">%</span>
+            </div>
+          </div>
+
+          {/* Minimal Precision Hairline Progress Track */}
+          <div className="w-full h-[2px] bg-stone-800 rounded-full overflow-hidden">
+            <div
+              ref={progressBarRef}
+              className="h-full bg-gradient-to-r from-amber-500 via-amber-400 to-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.8)]"
+            />
+          </div>
         </div>
       </div>
     </div>
